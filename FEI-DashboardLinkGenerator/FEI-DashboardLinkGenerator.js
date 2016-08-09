@@ -1,4 +1,4 @@
-define(['jquery', 'qlik', 'angular', 'ng!$q', 'css!./DashboardLinkGenerator.css'], function ($, qlik, angular, $q) {
+define(['jquery', 'qlik', 'angular', 'ng!$q', 'css!./FEI-DashboardLinkGenerator.css'], function ($, qlik, angular, $q) {
 
     return {
         //define the properties panel looks like
@@ -44,7 +44,7 @@ define(['jquery', 'qlik', 'angular', 'ng!$q', 'css!./DashboardLinkGenerator.css'
                             ref: "urlResolver",
                             type: "string",
                             label: "URL Resolver Mashup Link",
-                            defaultValue: "extensions/DashboardLinkGeneratorURLResolver/DashboardLinkGeneratorURLResolver.html"
+                            defaultValue: "extensions/FEI-DashboardLinkGeneratorURLResolver/FEI-DashboardLinkGeneratorURLResolver.html"
                         },
                         emailRecipients: {
                             ref: "emailRecipients",

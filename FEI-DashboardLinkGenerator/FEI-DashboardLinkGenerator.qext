@@ -5,7 +5,7 @@
 	"version": "1.0",
 	"icon": "extension",
 	"author": "Fady Heiba",
-	"preview": "DashboardLinkGenerator.png",
+	"preview": "FEI-DashboardLinkGenerator.png",
 	"keywords": "qlik-sense, visualization",
 	"dependencies": {
 		"qlik-sense": ">=2.2.x"

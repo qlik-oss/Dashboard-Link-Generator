@@ -9,12 +9,12 @@ This Qlik Sense extension generates a shareable link to the current app, sheet, 
 
 ###Output Methods:
 ####Copy To Clipboard:
-![alt tag](https://github.com/fadyheiba/FEI-Dashboard-Link-Generator/blob/master/FEI-DashboardLinkGenerator/Resources/Copy%20To%20Clipboard%20Output%20Method.png)
+![alt tag](https://github.com/fadyheiba/Dashboard-Link-Generator/blob/master/FEI-DashboardLinkGenerator/Resources/Copy%20To%20Clipboard%20Output%20Method.png)
 ####New Email with link:
-![alt tag](https://github.com/fadyheiba/FEI-Dashboard-Link-Generator/blob/master/FEI-DashboardLinkGenerator/Resources/New%20Email%20Output%20Method.png)
-![alt tag](https://github.com/fadyheiba/FEI-Dashboard-Link-Generator/blob/master/FEI-DashboardLinkGenerator/Resources/New%20Generated%20Email.png)
+![alt tag](https://github.com/fadyheiba/Dashboard-Link-Generator/blob/master/FEI-DashboardLinkGenerator/Resources/New%20Email%20Output%20Method.png)
+![alt tag](https://github.com/fadyheiba/Dashboard-Link-Generator/blob/master/FEI-DashboardLinkGenerator/Resources/New%20Generated%20Email.png)
 ####Textbox:
-![alt tag](https://github.com/fadyheiba/FEI-Dashboard-Link-Generator/blob/master/FEI-DashboardLinkGenerator/Resources/Copy%20to%20Textbox%20Output%20Method.png)
+![alt tag](https://github.com/fadyheiba/Dashboard-Link-Generator/blob/master/FEI-DashboardLinkGenerator/Resources/Copy%20to%20Textbox%20Output%20Method.png)
 
 ###For Sense 2.x:
 This version of the extension is for Sense 3.0 and above. If you would like to the version for 2.x version, it is included in a .zip file in the main folder. However, it is recommended to use this extension in Sense 3.0 as the new release fixed bugs in Sense 2.x that made the link resolution process more stable, specifically with date values including spaces.

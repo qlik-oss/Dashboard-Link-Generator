@@ -44,7 +44,7 @@ define(['jquery', 'qlik', 'angular', 'ng!$q', 'css!./FEI-DashboardLinkGenerator.
                             ref: "urlResolver",
                             type: "string",
                             label: "URL Resolver Mashup Link",
-                            defaultValue: "extensions/FEI-DashboardLinkGeneratorURLResolver/FEI-DashboardLinkGeneratorURLResolver.html"
+                            defaultValue: "extensions/FEI-DashboardLinkGenerator/FEI-DashboardLinkGeneratorURLResolver/FEI-DashboardLinkGeneratorURLResolver.html"
                         },
                         emailRecipients: {
                             ref: "emailRecipients",

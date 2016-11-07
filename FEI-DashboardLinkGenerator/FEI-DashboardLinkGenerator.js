@@ -32,6 +32,12 @@ define(['jquery', 'qlik', 'angular', 'ng!$q', 'css!./FEI-DashboardLinkGenerator.
                             label: "Max Values Selected in One Field",
                             defaultValue: "1000",
                             min: 1
+                        },
+                        urlResolver: {
+                            ref: "urlResolver",
+                            type: "string",
+                            label: "URL Resolver Mashup Link",
+                            defaultValue: "extensions/FEI-DashboardLinkGenerator/FEI-DashboardLinkGeneratorURLResolver/FEI-DashboardLinkGeneratorURLResolver.html"
                         }
                     }
                 },
@@ -40,12 +46,6 @@ define(['jquery', 'qlik', 'angular', 'ng!$q', 'css!./FEI-DashboardLinkGenerator.
                     type: "items",
                     label: "E-mail Settings",
                     items: {
-                        urlResolver: {
-                            ref: "urlResolver",
-                            type: "string",
-                            label: "URL Resolver Mashup Link",
-                            defaultValue: "extensions/FEI-DashboardLinkGenerator/FEI-DashboardLinkGeneratorURLResolver/FEI-DashboardLinkGeneratorURLResolver.html"
-                        },
                         emailRecipients: {
                             ref: "emailRecipients",
                             type: "string",

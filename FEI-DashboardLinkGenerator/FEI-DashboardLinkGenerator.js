@@ -30,14 +30,8 @@ define(['jquery', 'qlik', 'angular', 'ng!$q', 'css!./FEI-DashboardLinkGenerator.
                             ref: "maxSelected",
                             type: "integer",
                             label: "Max Values Selected in One Field",
-                            defaultValue: "1000",
+                            defaultValue: "100",
                             min: 1
-                        },
-                        urlResolver: {
-                            ref: "urlResolver",
-                            type: "string",
-                            label: "URL Resolver Mashup Link",
-                            defaultValue: "extensions/FEI-DashboardLinkGenerator/FEI-DashboardLinkGeneratorURLResolver/FEI-DashboardLinkGeneratorURLResolver.html"
                         }
                     }
                 },
@@ -46,6 +40,12 @@ define(['jquery', 'qlik', 'angular', 'ng!$q', 'css!./FEI-DashboardLinkGenerator.
                     type: "items",
                     label: "E-mail Settings",
                     items: {
+                        urlResolver: {
+                            ref: "urlResolver",
+                            type: "string",
+                            label: "URL Resolver Mashup Link",
+                            defaultValue: "extensions/FEI-DashboardLinkGenerator/FEI-DashboardLinkGeneratorURLResolver/FEI-DashboardLinkGeneratorURLResolver.html"
+                        },
                         emailRecipients: {
                             ref: "emailRecipients",
                             type: "string",
@@ -111,6 +111,7 @@ define(['jquery', 'qlik', 'angular', 'ng!$q', 'css!./FEI-DashboardLinkGenerator.
             //Getting the current application
             var app = qlik.currApp(this);
             var applicationId = app.model.layout.qFileName;
+            
 
             if (applicationId.substring(applicationId.length - 4) == '.qvf') {
                 applicationId = applicationId.slice(0, -4);

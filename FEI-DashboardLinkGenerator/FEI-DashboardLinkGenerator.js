@@ -111,7 +111,7 @@ define(['jquery', 'qlik', 'angular', 'ng!$q', 'css!./FEI-DashboardLinkGenerator.
             //Getting the current application
             var app = qlik.currApp(this);
             var applicationId = app.model.layout.qFileName;
-            
+
 
             if (applicationId.substring(applicationId.length - 4) == '.qvf') {
                 applicationId = applicationId.slice(0, -4);

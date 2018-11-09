@@ -1,9 +1,9 @@
 {
-	"name": "Dashboard Link Generator",
+	"name": "Share button",
 	"description": "Generates a link to the current dashboard with the current app, sheet, and selections.",
 	"type": "visualization",
 	"version": "1.0",
-	"icon": "extension",
+	"icon": "share",
 	"author": "Fady Heiba",
 	"preview": "FEI-DashboardLinkGenerator.png",
 	"keywords": "qlik-sense, visualization",

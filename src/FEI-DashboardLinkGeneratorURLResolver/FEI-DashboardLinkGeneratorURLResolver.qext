@@ -1,14 +1,15 @@
 {
-	"type": "mashup",
 	"name": "DashboardLinkGeneratorURLResolver",
-	"version": "1.0.0",
 	"description": "A mashup that resolves URLs removing HTML encoding when not needed.",
+	"type": "mashup",
+	"version": "1.0.0",
+	"icon": "share",
 	"homepage": "",
-	"author": "Fady Heiba",
+	"author": "Fady Heiba <fadyheiba@gmail.com>",
 	"keywords": "qlik-sense, mashup, url, resolver",
-	"license": "",
+	"license": "MIT",
 	"repository": "",
 	"dependencies": {
-		"qlik-sense": ">=2.1.x"
+		"qlik-sense": ">=5.5.x"
 	}
 }

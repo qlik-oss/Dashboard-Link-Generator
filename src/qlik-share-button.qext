@@ -2,12 +2,15 @@
 	"name": "Share button",
 	"description": "Generates a link to the current dashboard with the current app, sheet, and selections.",
 	"type": "visualization",
-	"version": "1.0",
+	"version": "X.Y.Z",
 	"icon": "share",
-	"author": "Fady Heiba",
-	"preview": "FEI-DashboardLinkGenerator.png",
+	"preview": "qlik-share-button.png",
+	"author": "Fady Heiba <fadyheiba@gmail.com>",
+	"homepage": "",
 	"keywords": "qlik-sense, visualization",
+	"license": "MIT",
+	"repository": "",
 	"dependencies": {
-		"qlik-sense": ">=2.2.x"
+		"qlik-sense": ">=5.5.x"
 	}
 }

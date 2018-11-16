@@ -1,4 +1,4 @@
-define(['jquery', 'qlik', 'angular', 'ng!$q', 'css!./FEI-DashboardLinkGenerator.css'], function ($, qlik, angular, $q) {
+define(['jquery', 'qlik', 'angular', 'ng!$q', 'css!./qlik-share-button.css'], function ($, qlik, angular, $q) {
 
     return {
         //define the properties panel looks like
@@ -44,7 +44,7 @@ define(['jquery', 'qlik', 'angular', 'ng!$q', 'css!./FEI-DashboardLinkGenerator.
                             ref: "urlResolver",
                             type: "string",
                             label: "URL Resolver Mashup Link",
-                            defaultValue: "extensions/FEI-DashboardLinkGenerator/FEI-DashboardLinkGeneratorURLResolver/FEI-DashboardLinkGeneratorURLResolver.html"
+                            defaultValue: "extensions/qlik-share-button/FEI-DashboardLinkGeneratorURLResolver/FEI-DashboardLinkGeneratorURLResolver.html"
                         },
                         emailRecipients: {
                             ref: "emailRecipients",
@@ -124,7 +124,7 @@ define(['jquery', 'qlik', 'angular', 'ng!$q', 'css!./FEI-DashboardLinkGenerator.
 
 
 
-            /*Creating base part of URL including clearing any leftover 
+            /*Creating base part of URL including clearing any leftover
             selections before opening the new page with our selections*/
             var baseURL = (config.isSecure ? "https://" : "http://" ) + config.host + (config.port ? ":" + config.port : "" ) + "/sense/app/" + applicationIdFr + "/sheet/" + SheetID + "/state/analysis/options/clearselections";
 
@@ -184,7 +184,7 @@ define(['jquery', 'qlik', 'angular', 'ng!$q', 'css!./FEI-DashboardLinkGenerator.
                     //If the array of split selected fields is more than zero
                     if (fieldSelections.length > 0) {
                         //Create a part of the App Integration API's URI responsible for selections
-                        var selectionPartOfURL = createSelectionURLPart(fieldSelections,tagSeparator,valueSeparator,true); 
+                        var selectionPartOfURL = createSelectionURLPart(fieldSelections,tagSeparator,valueSeparator,true);
                         if(selectionPartOfURL.tooManySelectionsPossible){
                             //console.log("Possible 'x of y values' returned. Need to double check. These dimensions are suspected: "+selectionPartOfURL.suspectedFields);
                             //If tooManySelections is possible, then create a new hypercube with the number of selections of the suspected fields
@@ -224,7 +224,7 @@ define(['jquery', 'qlik', 'angular', 'ng!$q', 'css!./FEI-DashboardLinkGenerator.
                                 }
                             }); //end of tooManySelections hypercube
                         } //end of tooManySelections possibility
-                        else { 
+                        else {
                             //If there's no possibility of too many selections, activate the button with the selections part added to the baseURL
                             addOnActivateButtonEvent($element,config,layout,baseURL+selectionPartOfURL.selectionURLPart,layout.emailRecipients,layout.emailTopic,layout.emailBody);
                         }
@@ -241,7 +241,7 @@ define(['jquery', 'qlik', 'angular', 'ng!$q', 'css!./FEI-DashboardLinkGenerator.
             }); //end of reply and createCube
         }
     };
-}); 
+});
 
 
 //Helper function for creating App Integration API's URI part responsible for selections

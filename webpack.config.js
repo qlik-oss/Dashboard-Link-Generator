@@ -7,13 +7,27 @@ console.log('Webpack mode:', settings.mode); // eslint-disable-line no-console
 const config = {
   devtool: 'source-map',
   entry: [
-    './src/' + settings.name + '.js'
+    './src/index.js'
   ],
   mode: settings.mode,
   output: {
     path: settings.buildDestination,
     filename: settings.name + '.js',
     libraryTarget: 'amd'
+  },
+  externals: {
+    jquery: {
+      amd: 'jquery',
+      commonjs: 'jquery',
+      commonjs2: 'jquery',
+      root: '_'
+    },
+    qlik: {
+      amd: 'qlik',
+      commonjs: 'qlik',
+      commonjs2: 'qlik',
+      root: '_'
+    }
   },
   module: {
     rules: [
@@ -44,8 +58,13 @@ const config = {
   },
   plugins: [
     new CopyWebpackPlugin([
-      'src/' + settings.name + '.qext',
-      'src/wbfolder.wbl'
+      'src/assets/' + settings.name + '.qext',
+      'src/assets/' + settings.name + '.png',
+      'src/assets/wbfolder.wbl',
+      {
+        from: 'src/FEI-DashboardLinkGeneratorURLResolver',
+        to: 'FEI-DashboardLinkGeneratorURLResolver/[name].[ext]'
+      }
     ], {}),
     new StyleLintPlugin()
   ]

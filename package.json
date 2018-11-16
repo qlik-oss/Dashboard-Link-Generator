@@ -1,10 +1,10 @@
 {
   "name": "qlik-share-button",
   "version": "0.0.1",
-  "description": "Qlik Sense Extension Radar chart",
-  "keywords": "word cloud qliksense extension",
-  "repository": "https://github.com/qlik-oss/D3ImprovedRadarChart",
-  "author": "Brian Booden <brianbooden@users.noreply.github.com>, VizMatt <matthieu.burel@gmail.com>",
+  "description": "Qlik Sense Extension share button",
+  "keywords": "share button qliksense extension",
+  "repository": "https://github.com/qlik-oss/Dashboard-Link-Generator",
+  "author": "Fady Heiba <fadyheiba@gmail.com>",
   "license": "MIT",
   "scripts": {
     "build": "gulp build",
@@ -45,7 +45,5 @@
     "webpack-cli": "3.1.2",
     "webpack-dev-server": "3.1.10"
   },
-  "dependencies": {
-    "d3": "3.5.12"
-  }
+  "dependencies": {}
 }

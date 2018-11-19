@@ -1,7 +1,7 @@
 {
   "name": "qlik-share-button",
   "version": "0.0.1",
-  "description": "Qlik Sense Extension share button",
+  "description": "Create shareable app links with current sheet and selection.",
   "keywords": "share button qliksense extension",
   "repository": "https://github.com/qlik-oss/Dashboard-Link-Generator",
   "author": "Fady Heiba <fadyheiba@gmail.com>",

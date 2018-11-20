@@ -1,10 +1,10 @@
 {
 	"name": "Share button",
-	"description": "Generates a link to the current dashboard with the current app, sheet, and selections.",
+	"description": "Create shareable app links with current sheet and selection.",
 	"type": "visualization",
 	"version": "X.Y.Z",
 	"icon": "share",
-	"preview": "qlik-share-button.png",
+	"preview": "sharebutton.png",
 	"author": "Fady Heiba <fadyheiba@gmail.com>",
 	"homepage": "",
 	"keywords": "qlik-sense, visualization",

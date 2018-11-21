@@ -2,7 +2,7 @@ import $ from 'jquery';
 import qlik from 'qlik';
 import { addOnActivateButtonEvent, createSelectionURLPart } from './utilities';
 
-function paint ($element, layout, component) {
+function paint ($element, layout, component, qTheme) {
   //Defining the separators used in GetCurrentSelections function call
   var recordSeparator = '&@#$^()';
   var tagSeparator = '::::';
@@ -51,20 +51,22 @@ function paint ($element, layout, component) {
   var baseURL = (config.isSecure ? "https://" : "http://" ) + config.host + (config.port ? ":" + config.port : "" ) + "/sense/app/" + applicationIdFr + "/sheet/" + SheetID + "/state/analysis/options/clearselections";
 
   //If the user chose to output the link through an email, only create a button, otherwise create a textbox as well
+  const button = $(`<button name="GenerateDashboardLink" id="generateDashboardLink" class="dashboardLinkGenerator" />`);
+  button.attr('style', `background-color: ${qTheme.properties.dataColors.primaryColor};`);
+
   if(layout.outputMethod == "email"){
-    var buttonHTMLCode = '<button name="'+"GenerateDashboardLink"+'" id="generateDashboardLink" class="dashboardLinkGenerator">'+"Email Link"+'</button>';
-    $element.html(buttonHTMLCode);
+    button.text('Email Link');
+    $element.html(button);
   }
   else if(layout.outputMethod == "clipboard"){
-    var buttonHTMLCode = '<button name="'+"GenerateDashboardLink"+'" id="generateDashboardLink" class="dashboardLinkGenerator">'+"Copy Dashboard Link"+'</button>';
-    $element.html(buttonHTMLCode);
+    button.text('Copy Dashboard Link');
+    $element.html(button);
   }
   else if(layout.outputMethod == "textbox"){
-    var buttonHTMLCode = '<button name="GenerateDashboardLink" id="generateDashboardLink" class="dashboardLinkGenerator">Generate Link</button>';
+    button.text('Generate Link');
     var textboxHTMLCode = '<textarea id="textbox" class="linkTextboxArea" type="text" readOnly="true" style="height: 90%;width: 90%;font-size: 10px;" value="0"/>';
-
     //Creating the button, its name, its CSS class, and its original text
-    $element.html('<table style="height:100%;text-align: center;"><tr><td style="width:20%;">'+buttonHTMLCode+'</td><td style="width:80%;">'+textboxHTMLCode+'</td></tr></table>');
+    $element.html('<table style="height:100%;text-align: center;"><tr><td style="width:20%;">'+button[0].outerHTML+'</td><td style="width:80%;">'+textboxHTMLCode+'</td></tr></table>');
   }
 
   //If in edit mode, do nothing
@@ -91,18 +93,15 @@ function paint ($element, layout, component) {
       qWidth : 1
     }]
   }, function(reply) {
-    console.log('App Integration API\'s reply is: ', reply);
     //If the app's reply is not empty
     if(reply.qHyperCube.qDataPages[0].qMatrix[0][0].qText && reply.qHyperCube.qDataPages[0].qMatrix[0][0].qText != '-') {
       //Split the app's reply using the recordSeparator
       var fieldSelections = reply.qHyperCube.qDataPages[0].qMatrix[0][0].qText.split(recordSeparator);
-      //console.log('Number of characters in the selections:',fieldSelections[0].length);
       //If the array of split selected fields is more than zero
       if (fieldSelections.length > 0) {
         //Create a part of the App Integration API's URI responsible for selections
         var selectionPartOfURL = createSelectionURLPart(fieldSelections,tagSeparator,valueSeparator,true);
         if(selectionPartOfURL.tooManySelectionsPossible){
-          //console.log("Possible 'x of y values' returned. Need to double check. These dimensions are suspected: "+selectionPartOfURL.suspectedFields);
           //If tooManySelections is possible, then create a new hypercube with the number of selections of the suspected fields
           var measuresDef = [];
           selectionPartOfURL.suspectedFields.forEach(function(field){

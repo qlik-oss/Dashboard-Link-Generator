@@ -48,6 +48,9 @@ If you want to do code changes to the extension follow these simple steps to get
 
    b. **Build**: `npm run build`. If you want to build the extension package. The output zip-file can be found in the `buildFolder`.
 
+# Limitations
+
+See [Limitations](docs/LIMITATIONS.md)
 
 # Original authors
 

@@ -66,7 +66,12 @@ if(QueryString.URL.includes("select/")){
         added to all selected values earlier. Otherwise if it doesn't, just decode the square brackets so
         Sense can associate the selected value. Regardless, replace any slashes in the selected value.*/
     for(var j = 0; j<selectionsAlone.length; j++){
-      selectionsAlone[j] = selectionsAlone[j].replace(/%5D/g,"]").replace(/%5B/g,"[").replace(/%2F/g,"/");
+      selectionsAlone[j] = selectionsAlone[j]
+        .replace(/%5D/g,"]")
+        .replace(/%5B/g,"[")
+        .replace(/%2F/g,"/")
+        .replace(/\*/g, ''); // hack to make sure * doesn't mess up url resolution completely
+
       //Read the value to the final URL and add a semicolon before we load another selected value
       finalURL += selectionsAlone[j] + "%3B";
     }

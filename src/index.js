@@ -34,20 +34,19 @@ export default {
             label: "Max Values Selected in One Field",
             defaultValue: "100",
             min: 1
+          },
+          urlResolver: {
+            ref: "urlResolver",
+            type: "string",
+            label: "URL Resolver Link",
+            defaultValue: "extensions/qlik-share-button/url-resolver/index.html"
           }
         }
       },
-
       emailOptions: {
         type: "items",
         label: "E-mail Settings",
         items: {
-          urlResolver: {
-            ref: "urlResolver",
-            type: "string",
-            label: "URL Resolver Mashup Link",
-            defaultValue: "extensions/qlik-share-button/FEI-DashboardLinkGeneratorURLResolver/FEI-DashboardLinkGeneratorURLResolver.html"
-          },
           emailRecipients: {
             ref: "emailRecipients",
             type: "string",
@@ -74,7 +73,6 @@ export default {
       }
     }
   },
-
   paint: ($element, layout) => {
     const component = this;
     const app = qlik.currApp(this);

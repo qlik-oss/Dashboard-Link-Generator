@@ -62,8 +62,8 @@ const config = {
       'src/assets/' + settings.name + '.png',
       'src/assets/wbfolder.wbl',
       {
-        from: 'src/FEI-DashboardLinkGeneratorURLResolver',
-        to: 'FEI-DashboardLinkGeneratorURLResolver/[name].[ext]'
+        from: 'src/url-resolver',
+        to: 'url-resolver/[name].[ext]'
       }
     ], {}),
     new StyleLintPlugin()

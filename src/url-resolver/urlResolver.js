@@ -42,19 +42,20 @@ var QueryString = function () {
 
 //If the URL parameter coming in has selections whose certain characters we need to decode
 if(QueryString.URL.includes("select/")){
-  console.log('Before any selective decoding: ',QueryString.URL);
+  console.log('Before any selective decoding: ',QueryString.URL); // eslint-disable-line no-console
   //Splitting the main part of the URL and the selections part
   var mainURL = QueryString.URL.split("clearselections/");
 
   //Building a new final URL and initializing it with the main part of the URL we just split
   var finalURL = mainURL[0] + "clearselections";
-  console.log("finalURL is now: ", finalURL);
+  console.log("finalURL is now: ", finalURL); // eslint-disable-line no-console
 
   /*Splitting the selections part of the URL with slashes so we have the selections split in this order:
     "select/" then the fieldname then the selections themselves*/
   var splitBySlashes = mainURL[1].split("/");
 
-  //Splitting the selected values themselves and fixing the problematic characters depending on what characters they have
+  /* Splitting the selected values themselves and fixing the problematic characters
+    depending on what characters they have */
   for(var i = 2; i<splitBySlashes.length; i+= 3){
     //Add the two parts we skipped (the "select" and the fieldname) to the final URL
     finalURL += "/" + splitBySlashes[i-2] + "/" + splitBySlashes[i-1] + "/";
@@ -79,7 +80,7 @@ if(QueryString.URL.includes("select/")){
     finalURL = finalURL.slice(0, -3);
   }
   //Redirect using the final URL
-  console.log("finalURL is now: ", finalURL);
+  console.log("finalURL is now: ", finalURL); // eslint-disable-line no-console
   window.location = finalURL;
 }
 else{window.location = QueryString.URL;}

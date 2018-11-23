@@ -1,3 +1,4 @@
+import qlik from 'qlik';
 import paint from './paint';
 import './main.less';
 
@@ -76,10 +77,12 @@ export default {
 
   paint: ($element, layout) => {
     const component = this;
-    try {
-      paint($element, layout, component);
-    } catch (exception) {
-      console.error(exception); // eslint-disable-line no-console
-    }
+    const app = qlik.currApp(this);
+    app.theme.getApplied()
+      .then(qTheme => {
+        paint($element, layout, component, qTheme);
+      }).catch(exception => {
+        console.error(exception); // eslint-disable-line no-console
+      });
   }
 };

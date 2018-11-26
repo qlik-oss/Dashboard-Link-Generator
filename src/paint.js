@@ -66,86 +66,72 @@ function paint ($element, layout, component, qTheme) {
   //If in edit mode, do nothing
   if(window.location.pathname.includes("/state/edit")) return;
 
-  //Making sure the maximum selected values in a field is at least one
   const maxValuesSelectedInField = Math.max(1, layout.maxSelected);
 
   //Create a hypercube with the GetCurrentSelections expression
-  app.createCube({
-    qMeasures : [
-      {
-        qDef : {
-          qDef : "=GetCurrentSelections('"+RECORD_SEPARATOR+"','"+TAG_SEPARATOR+"','"+VALUE_SEPARATOR+"',"+maxValuesSelectedInField+")"
+  app.createCube(
+    {
+      qMeasures: [{
+        qDef: {
+          qDef: "=GetCurrentSelections('" + RECORD_SEPARATOR + "','" + TAG_SEPARATOR + "','" + VALUE_SEPARATOR + "'," + maxValuesSelectedInField + ")"
         }
+      }],
+      qInitialDataFetch: [{
+        qTop: 0,
+        qLeft: 0,
+        qHeight: 1,
+        qWidth: 1
+      }]
+    },
+    reply => {
+      const qMatrix = reply.qHyperCube.qDataPages[0].qMatrix;
+      const qText = qMatrix[0][0].qText;
+
+      const fieldSelections = (qText && qText != '-') ? qText.split(RECORD_SEPARATOR) : [];
+      if (fieldSelections.length === 0) {
+        addOnActivateButtonEvent($element, config, layout, baseURL, layout.emailRecipients, layout.emailTopic, layout.emailBody);
+        return;
       }
-    ],
-    qInitialDataFetch : [{
-      qTop : 0,
-      qLeft : 0,
-      qHeight : 1,
-      qWidth : 1
-    }]
-  }, function(reply) {
-    //If the app's reply is not empty
-    if(reply.qHyperCube.qDataPages[0].qMatrix[0][0].qText && reply.qHyperCube.qDataPages[0].qMatrix[0][0].qText != '-') {
-      //Split the app's reply using the RECORD_SEPARATOR
-      var fieldSelections = reply.qHyperCube.qDataPages[0].qMatrix[0][0].qText.split(RECORD_SEPARATOR);
-      //If the array of split selected fields is more than zero
-      if (fieldSelections.length > 0) {
-        //Create a part of the App Integration API's URI responsible for selections
-        var selectionPartOfURL = createSelectionURLPart(fieldSelections,TAG_SEPARATOR,VALUE_SEPARATOR,true);
-        if(selectionPartOfURL.tooManySelectionsPossible){
-          //If tooManySelections is possible, then create a new hypercube with the number of selections of the suspected fields
-          var measuresDef = [];
-          selectionPartOfURL.suspectedFields.forEach(function(field){
-            var measureDefinition = {
-              qDef : {
-                qDef : "=GetSelectedCount(["+field+"],True())"
-              }
-            };
-            measuresDef.push(measureDefinition);
-          });
-          app.createCube({
-            qMeasures : measuresDef,
-            qInitialDataFetch : [{
-              qTop : 0,
-              qLeft : 0,
-              qHeight : 1,
-              qWidth : selectionPartOfURL.suspectedFields.length
-            }]
-          }, function(reply) {
-            var tooManySelectionsMade = false;
-            reply.qHyperCube.qDataPages[0].qMatrix[0].forEach(function (suspectedSelection) {
-              //check if the number of selected values is > "Max number of values selected in one field" property
-              if(parseInt(suspectedSelection.qText) > layout.maxSelected)
-                tooManySelectionsMade = true;
-            });
-            if(tooManySelectionsMade) {
-              //If this is the case for at least one field, disable the button
-              $("#generateDashboardLink").text("Too Many Selections");
-              $("#generateDashboardLink").prop("disabled",true);
-            }
-            else {
-              //Considering it a false alarm (for example some field has actual value that follows the "x of y" pattern); activate the button
-              var selectionPartOfURL = createSelectionURLPart(fieldSelections,TAG_SEPARATOR,VALUE_SEPARATOR,false);
-              addOnActivateButtonEvent($element,config,layout,baseURL+selectionPartOfURL.selectionURLPart,layout.emailRecipients,layout.emailTopic,layout.emailBody);
-            }
-          }); //end of tooManySelections hypercube
-        } //end of tooManySelections possibility
-        else {
-          //If there's no possibility of too many selections, activate the button with the selections part added to the baseURL
-          addOnActivateButtonEvent($element,config,layout,baseURL+selectionPartOfURL.selectionURLPart,layout.emailRecipients,layout.emailTopic,layout.emailBody);
-        }
-      } //end of if split selected fields is zero
-      else{
-        //If the array of split selected fields is zero, activate the button with no selections added to the baseURL
-        addOnActivateButtonEvent($element,config,layout,baseURL,layout.emailRecipients,layout.emailTopic,layout.emailBody);
+
+      const selectionPartOfURL = createSelectionURLPart(fieldSelections, TAG_SEPARATOR, VALUE_SEPARATOR, true);
+      if (!selectionPartOfURL.tooManySelectionsPossible) {
+        console.log('!selectionPartOfURL.tooManySelectionsPossible');
+        addOnActivateButtonEvent($element, config, layout, baseURL + selectionPartOfURL.selectionURLPart, layout.emailRecipients, layout.emailTopic, layout.emailBody);
+        return;
       }
-    } //end of if App Integration API's reply is empty
-    else{
-      //If the app's reply is empty, activate the button with no selections added to the baseURL
-      addOnActivateButtonEvent($element,config,layout,baseURL,layout.emailRecipients,layout.emailTopic,layout.emailBody);
-    }
-  }); //end of reply and createCube
+
+      // Create a new hypercube with the number of selections of the suspected fields
+      app.createCube(
+        {
+          qMeasures: selectionPartOfURL.suspectedFields.map(field => ({
+            qDef: {
+              qDef: "=GetSelectedCount([" + field + "],True())"
+            }
+          })),
+          qInitialDataFetch: [{
+            qTop: 0,
+            qLeft: 0,
+            qHeight: 1,
+            qWidth: selectionPartOfURL.suspectedFields.length
+          }]
+        },
+        reply => {
+          const qMatrix = reply.qHyperCube.qDataPages[0].qMatrix;
+          const tooManySelectionsMade = qMatrix[0].some(suspectedSelection => (
+            parseInt(suspectedSelection.qText) > layout.maxSelected
+          ));
+          if (tooManySelectionsMade) {
+            //If this is the case for at least one field, disable the button
+            $("#generateDashboardLink").text("Too Many Selections");
+            $("#generateDashboardLink").prop("disabled", true);
+          }
+          else {
+            //Considering it a false alarm (for example some field has actual value that follows the "x of y" pattern); activate the button
+            const selectionPartOfURL = createSelectionURLPart(fieldSelections, TAG_SEPARATOR, VALUE_SEPARATOR, false);
+            addOnActivateButtonEvent($element, config, layout, baseURL + selectionPartOfURL.selectionURLPart, layout.emailRecipients, layout.emailTopic, layout.emailBody);
+          }
+        });
+    });
 }
 
 export default paint;

@@ -56,13 +56,6 @@ export function addOnActivateButtonEvent ($element,config,layout,url,recipient,t
       textboxReference.addEventListener('click', function() {
         var copyTextarea = document.querySelector('.linkTextboxArea');
         copyTextarea.select();
-        try {
-          var successful = document.execCommand('copy');
-          var msg = successful ? 'successful' : 'unsuccessful';
-          console.log('Copying text command was ' + msg);
-        } catch (err) {
-          console.log('Oops, unable to copy.');
-        }
       });
       //Changing the button's text temporarily to mark success
       document.getElementById('generateDashboardLink').innerHTML= "Copied To Clipboard!";
@@ -122,12 +115,5 @@ function copyTextToClipboard(text) {
 
   textArea.select();
 
-  try {
-    var successful = document.execCommand('copy');
-    var msg = successful ? 'successful' : 'unsuccessful';
-    console.log('Copying text command was ' + msg);
-  } catch (err) {
-    console.log('Oops, unable to copy');
-  }
   document.body.removeChild(textArea);
 }

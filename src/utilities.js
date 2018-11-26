@@ -26,7 +26,7 @@ export function createSelectionURLPart (fieldSelections,tagSeparator,valueSepara
 //Helper funciton for adding on a "qv-activate" event of button/link
 export function addOnActivateButtonEvent ($element,config,layout,url,recipient,topic,body) {
   var encodedURL = encodeURIComponent(url);
-
+  $("#generateDashboardLink").off('qv-activate');
   $("#generateDashboardLink").on('qv-activate', function () {
     var finalURL = (config.isSecure ? "https://" : "http://" ) + config.host + (config.port ? ":" + config.port : "" ) + "/" + layout.urlResolver + "?URL=" + encodedURL;
 

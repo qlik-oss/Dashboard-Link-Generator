@@ -3,7 +3,6 @@ import paint from './paint';
 import './main.less';
 
 export default {
-  //define the properties panel looks like
   definition: {
     type: "items",
     component: "accordion",

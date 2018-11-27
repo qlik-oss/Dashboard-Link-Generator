@@ -19,7 +19,9 @@ export function createSelectionURLPart (fieldSelections,tagSeparator,valueSepara
     else {
       returnObject.selectionURLPart += "/select/"+encodeURIComponent(item.split(tagSeparator)[0]) + "/" + encodeURIComponent(item.split(tagSeparator)[1].replace(tagSeparator,";"));
       const splitForBrackets = returnObject.selectionURLPart.split("%3B%3B%3B%3B");
-      returnObject.selectionURLPart = splitForBrackets.join("%3B").replace(/\*/g, '');
+      returnObject.selectionURLPart = splitForBrackets.join("%3B");
+      // Handle specific characters
+      returnObject.selectionURLPart.replace(/\*/g, '%2A');
     }
   });
   return returnObject;

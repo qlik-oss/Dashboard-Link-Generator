@@ -76,7 +76,6 @@ gulp.task('watch', () => new Promise((resolve, reject) => {
     }
 
     // eslint-disable-next-line no-console
-    console.log('Listening at localhost:' + settings.port);
 
     resolve(null, devServer);
   });

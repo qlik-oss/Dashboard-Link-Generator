@@ -58,11 +58,10 @@ export function addOnActivateButtonEvent ($element,config,layout,url,recipient,t
         var copyTextarea = document.querySelector('.linkTextboxArea');
         copyTextarea.select();
         try {
-          var successful = document.execCommand('copy');
-          var msg = successful ? 'successful' : 'unsuccessful';
-          console.log('Copying text command was ' + msg);
-        } catch (err) {
-          console.log('Oops, unable to copy.');
+          document.execCommand('copy');
+        }
+        catch (err) {
+          console.log(err); // eslint-disable-line no-console
         }
       });
       //Changing the button's text temporarily to mark success
@@ -122,13 +121,11 @@ function copyTextToClipboard(text) {
   document.body.appendChild(textArea);
 
   textArea.select();
-
   try {
-    var successful = document.execCommand('copy');
-    var msg = successful ? 'successful' : 'unsuccessful';
-    console.log('Copying text command was ' + msg);
+    document.execCommand('copy');
   } catch (err) {
-    console.log('Oops, unable to copy');
+    console.log(err); // eslint-disable-line no-console
   }
+
   document.body.removeChild(textArea);
 }

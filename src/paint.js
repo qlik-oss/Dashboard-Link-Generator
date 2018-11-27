@@ -95,7 +95,6 @@ function paint ($element, layout, component, qTheme) {
 
       const selectionPartOfURL = createSelectionURLPart(fieldSelections, TAG_SEPARATOR, VALUE_SEPARATOR, true);
       if (!selectionPartOfURL.tooManySelectionsPossible) {
-        console.log('!selectionPartOfURL.tooManySelectionsPossible');
         addOnActivateButtonEvent($element, config, layout, baseURL + selectionPartOfURL.selectionURLPart, layout.emailRecipients, layout.emailTopic, layout.emailBody);
         return;
       }

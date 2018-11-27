@@ -19,7 +19,7 @@ export function createSelectionURLPart (fieldSelections,tagSeparator,valueSepara
     else {
       returnObject.selectionURLPart += "/select/"+encodeURIComponent(item.split(tagSeparator)[0]) + "/" + encodeURIComponent(item.split(tagSeparator)[1].replace(tagSeparator,";"));
       const splitForBrackets = returnObject.selectionURLPart.split("%3B%3B%3B%3B");
-      returnObject.selectionURLPart = splitForBrackets.join("%3B");
+      returnObject.selectionURLPart = splitForBrackets.join("%3B").replace(/\*/g, '');
     }
   });
   return returnObject;

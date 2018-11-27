@@ -68,8 +68,8 @@ if(QueryString.URL.includes("select/")){
         Sense can associate the selected value. Regardless, replace any slashes in the selected value.*/
     for(var j = 0; j<selectionsAlone.length; j++){
       selectionsAlone[j] = selectionsAlone[j]
-        .replace(/%5D/g,"]")
-        .replace(/%5B/g,"[")
+        .replace(/%5D/g,"")
+        .replace(/%5B/g,"")
         .replace(/%2F/g,"/")
         .replace(/\*/g, ''); // hack to make sure * doesn't mess up url resolution completely
 

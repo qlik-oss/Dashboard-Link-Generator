@@ -33,8 +33,10 @@ gulp.task('webpack-build', done => {
     const compilationErrors = statistics && statistics.compilation.errors;
     const hasCompilationErrors = !statistics || (compilationErrors && compilationErrors.length > 0);
 
+    console.log(statistics && statistics.toString({ chunks: false, colors: true })); // eslint-disable-line no-console
 
     if (error || hasCompilationErrors) {
+      console.log('Build has errors or eslint errors, fail it'); // eslint-disable-line no-console
       process.exit(1);
     }
 
@@ -69,6 +71,7 @@ gulp.task('watch', () => new Promise((resolve, reject) => {
   }).listen(settings.port, 'localhost', error => {
     compiler.outputFileSystem = originalOutputFileSystem;
     if (error) {
+      console.error(error); // eslint-disable-line no-console
       return reject(error);
     }
 

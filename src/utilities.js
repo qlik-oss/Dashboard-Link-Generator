@@ -56,6 +56,12 @@ export function addOnActivateButtonEvent ($element,config,layout,url,recipient,t
       textboxReference.addEventListener('click', function() {
         var copyTextarea = document.querySelector('.linkTextboxArea');
         copyTextarea.select();
+        try {
+          document.execCommand('copy');
+        }
+        catch (err) {
+          console.log(err); /*eslint no-console: 0*/
+        }
       });
       //Changing the button's text temporarily to mark success
       document.getElementById('generateDashboardLink').innerHTML= "Copied To Clipboard!";
@@ -114,6 +120,11 @@ function copyTextToClipboard(text) {
   document.body.appendChild(textArea);
 
   textArea.select();
+  try {
+    document.execCommand('copy');
+  } catch (err) {
+    console.log(err); /*eslint no-console: 0*/
+  }
 
   document.body.removeChild(textArea);
 }

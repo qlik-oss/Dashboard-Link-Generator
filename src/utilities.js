@@ -60,7 +60,7 @@ export function addOnActivateButtonEvent ($element,config,layout,url,recipient,t
           document.execCommand('copy');
         }
         catch (err) {
-          console.log(err); /*eslint no-console: 0*/
+          console.log(err); // eslint-disable-line no-console
         }
       });
       //Changing the button's text temporarily to mark success
@@ -123,7 +123,7 @@ function copyTextToClipboard(text) {
   try {
     document.execCommand('copy');
   } catch (err) {
-    console.log(err); /*eslint no-console: 0*/
+    console.log(err); // eslint-disable-line no-console
   }
 
   document.body.removeChild(textArea);

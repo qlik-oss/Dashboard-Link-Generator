@@ -73,6 +73,9 @@ export default {
       }
     }
   },
+  support:{
+    exportData: false
+  },
   paint: ($element, layout) => {
     const component = this;
     const app = qlik.currApp(this);

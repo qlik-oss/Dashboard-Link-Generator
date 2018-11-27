@@ -1,5 +1,7 @@
 import $ from 'jquery';
 
+const LISTENER_NAMESPACE = "dashboard-link-generator";
+
 //Helper function for creating App Integration API's URI part responsible for selections
 export function createSelectionURLPart (fieldSelections,tagSeparator,valueSeparator,checkForTooManySelections) {
   var returnObject = {
@@ -25,20 +27,18 @@ export function createSelectionURLPart (fieldSelections,tagSeparator,valueSepara
 
 //Helper funciton for adding on a "qv-activate" event of button/link
 export function addOnActivateButtonEvent ($element,config,layout,url,recipient,topic,body) {
-  console.log('addOnActivateButtonEvent()');
   var encodedURL = encodeURIComponent(url);
 
-  $("#generateDashboardLink").on('qv-activate', function () {
+  $("#generateDashboardLink").off(`qv-activate.${LISTENER_NAMESPACE}`);
+  $("#generateDashboardLink").on(`qv-activate.${LISTENER_NAMESPACE}`, function () {
     var finalURL = (config.isSecure ? "https://" : "http://" ) + config.host + (config.port ? ":" + config.port : "" ) + "/" + layout.urlResolver + "?URL=" + encodedURL;
 
     if(layout.outputMethod == "email"){
-      //Opening a new email with the user settings' input subject, the dashboard generated link, and the user settings' input body
       window.location.href = 'mailto:' + recipient + '?subject=' + topic + '&body=' + body + " " + "%0D%0A" + "%0D%0A" + (config.isSecure ? "https://" : "http://" ) + config.host + (config.port ? ":" + config.port : "" ) + "/" + layout.urlResolver + "?URL=" + encodedURL + "%0D%0A" + "%0D%0A" + "%0D%0A" + "http://www.qlik.com";
     }
     else if(layout.outputMethod == "clipboard"){
-      //Copying the generated link
-      var textboxReference = document.querySelector('.dashboardLinkGenerator');
-      textboxReference.addEventListener('click', function() {
+      $('.dashboardLinkGenerator').off(`click.${LISTENER_NAMESPACE}`);
+      $('.dashboardLinkGenerator').on(`click.${LISTENER_NAMESPACE}`, function() {
         copyTextToClipboard((config.isSecure ? "https://" : "http://" ) + config.host + (config.port ? ":" + config.port : "" ) + "/" + layout.urlResolver + "?URL=" + url);
       });
       //Changing the button's text temporarily to mark success
@@ -53,8 +53,8 @@ export function addOnActivateButtonEvent ($element,config,layout,url,recipient,t
       document.getElementById('textbox').value = decodeURIComponent(finalURL);
 
       //Copying the textbox's text (which we just added the generated link to)
-      var textboxReference = document.querySelector('.dashboardLinkGenerator');
-      textboxReference.addEventListener('click', function() {
+      $('.dashboardLinkGenerator').off(`click.${LISTENER_NAMESPACE}`);
+      $('.dashboardLinkGenerator').on(`click.${LISTENER_NAMESPACE}`, function() {
         var copyTextarea = document.querySelector('.linkTextboxArea');
         copyTextarea.select();
         try {

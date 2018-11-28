@@ -46,14 +46,10 @@ function paint ($element, layout, component, qTheme) {
   //selections before opening the new page with our selections
   var baseURL = (config.isSecure ? "https://" : "http://" ) + config.host + (config.port ? ":" + config.port : "" ) + "/sense/app/" + applicationIdFr + "/sheet/" + SheetID + "/state/analysis/options/clearselections";
 
-  //If the user chose to output the link through an email, only create a button, otherwise create a textbox as well
+  //If the user chose to output the link to clipboard only create a button, otherwise create a textbox as well
   const button = $(`<button name="GenerateDashboardLink" id="generateDashboardLink" class="dashboardLinkGenerator" />`);
   button.attr('style', `background-color: ${qTheme.properties.dataColors.primaryColor};`);
-  if(layout.outputMethod == "email"){
-    button.text('Email Link');
-    $element.html(button);
-  }
-  else if(layout.outputMethod == "clipboard"){
+  if(layout.outputMethod == "clipboard"){
     button.text('Copy Dashboard Link');
     $element.html(button);
   }
@@ -89,13 +85,13 @@ function paint ($element, layout, component, qTheme) {
 
       const fieldSelections = (qText && qText != '-') ? qText.split(RECORD_SEPARATOR) : [];
       if (fieldSelections.length === 0) {
-        addOnActivateButtonEvent($element, config, layout, baseURL, layout.emailRecipients, layout.emailTopic, layout.emailBody);
+        addOnActivateButtonEvent($element, config, layout, baseURL);
         return;
       }
 
       const selectionPartOfURL = createSelectionURLPart(fieldSelections, TAG_SEPARATOR, VALUE_SEPARATOR, true);
       if (!selectionPartOfURL.tooManySelectionsPossible) {
-        addOnActivateButtonEvent($element, config, layout, baseURL + selectionPartOfURL.selectionURLPart, layout.emailRecipients, layout.emailTopic, layout.emailBody);
+        addOnActivateButtonEvent($element, config, layout, baseURL + selectionPartOfURL.selectionURLPart);
         return;
       }
 
@@ -127,7 +123,7 @@ function paint ($element, layout, component, qTheme) {
           else {
             //Considering it a false alarm (for example some field has actual value that follows the "x of y" pattern); activate the button
             const selectionPartOfURL = createSelectionURLPart(fieldSelections, TAG_SEPARATOR, VALUE_SEPARATOR, false);
-            addOnActivateButtonEvent($element, config, layout, baseURL + selectionPartOfURL.selectionURLPart, layout.emailRecipients, layout.emailTopic, layout.emailBody);
+            addOnActivateButtonEvent($element, config, layout, baseURL + selectionPartOfURL.selectionURLPart);
           }
         });
     });

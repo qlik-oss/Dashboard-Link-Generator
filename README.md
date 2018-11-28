@@ -1,7 +1,7 @@
 # Dashboard-Link-Generator
 Allows you to share your current dashboard by generating a link to your app/sheet/selections.
 
-This Qlik Sense extension generates a shareable link to the current app, sheet, and selections made so that the person receiving the link can see exactly what you're seeing. You can share the generated link through three output methods: Copy to Clipboard, Create New Email with link, or a Textbox.
+This Qlik Sense extension generates a shareable link to the current app, sheet, and selections made so that the person receiving the link can see exactly what you're seeing. You can share the generated link through three output methods: Copy to Clipboard or from a Textbox.
 
 [![CircleCI](https://circleci.com/gh/qlik-oss/Dashboard-Link-Generator.svg?style=svg)](https://circleci.com/gh/qlik-oss/Dashboard-Link-Generator)
 
@@ -13,9 +13,6 @@ This Qlik Sense extension generates a shareable link to the current app, sheet, 
 # Output Methods
 ## Copy To Clipboard
 ![alt tag](resources/Copy%20To%20Clipboard%20Output%20Method.png)
-## New Email with link
-![alt tag](resources/New%20Email%20Output%20Method.png)
-![alt tag](resources/New%20Generated%20Email.png)
 ## Textbox
 ![alt tag](resources/Copy%20to%20Textbox%20Output%20Method.png)
 

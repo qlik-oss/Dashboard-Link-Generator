@@ -23,6 +23,7 @@ if (!String.prototype.includes) {
 }
 
 function paint ($element, layout, component, qTheme) {
+  let buttonText = '';
   var config = {
     host: window.location.hostname,
     prefix: window.location.pathname.substr(0, window.location.pathname.toLowerCase().lastIndexOf("/extensions") + 1),
@@ -50,14 +51,15 @@ function paint ($element, layout, component, qTheme) {
   const button = $(`<button name="GenerateDashboardLink" id="generateDashboardLink" class="dashboardLinkGenerator" />`);
   button.attr('style', `background-color: ${qTheme.properties.dataColors.primaryColor};`);
   if(layout.outputMethod == "clipboard"){
-    button.text('Copy Dashboard Link');
+    buttonText = 'Copy Dashboard Link';
     $element.html(button);
   }
   else if(layout.outputMethod == "textbox"){
-    button.text('Generate Link');
+    buttonText = 'Generate Link';
     var textboxHTMLCode = '<textarea id="textbox" class="linkTextboxArea" type="text" readOnly="true" style="height: 90%;width: 90%;font-size: 10px;" value="0"/>';
     $element.html('<table style="height:100%;text-align: center;"><tr><td style="width:20%;">'+button[0].outerHTML+'</td><td style="width:80%;">'+textboxHTMLCode+'</td></tr></table>');
   }
+  button.text(buttonText);
 
   //If in edit mode, do nothing
   if(window.location.pathname.includes("/state/edit")) return;
@@ -80,18 +82,30 @@ function paint ($element, layout, component, qTheme) {
       }]
     },
     reply => {
+      button.text(buttonText);
+      button.prop("disabled", false);
       const qMatrix = reply.qHyperCube.qDataPages[0].qMatrix;
       const qText = qMatrix[0][0].qText;
 
       const fieldSelections = (qText && qText != '-') ? qText.split(RECORD_SEPARATOR) : [];
       if (fieldSelections.length === 0) {
-        addOnActivateButtonEvent($element, config, layout, baseURL);
+        addOnActivateButtonEvent(
+          $element,
+          config,
+          layout,
+          baseURL
+        );
         return;
       }
 
       const selectionPartOfURL = createSelectionURLPart(fieldSelections, TAG_SEPARATOR, VALUE_SEPARATOR, true);
       if (!selectionPartOfURL.tooManySelectionsPossible) {
-        addOnActivateButtonEvent($element, config, layout, baseURL + selectionPartOfURL.selectionURLPart);
+        addOnActivateButtonEvent(
+          $element,
+          config,
+          layout,
+          baseURL + selectionPartOfURL.selectionURLPart
+        );
         return;
       }
 
@@ -116,14 +130,20 @@ function paint ($element, layout, component, qTheme) {
             parseInt(suspectedSelection.qText) > layout.maxSelected
           ));
           if (tooManySelectionsMade) {
-            //If this is the case for at least one field, disable the button
-            $("#generateDashboardLink").text("Too Many Selections");
-            $("#generateDashboardLink").prop("disabled", true);
+            // If this is the case for at least one field, disable the button
+            button.text("Too Many Selections");
+            button.prop("disabled", true);
           }
           else {
-            //Considering it a false alarm (for example some field has actual value that follows the "x of y" pattern); activate the button
+            // Considering it a false alarm (for example some field has actual value that follows the "x of y" pattern)
+            // activate the button
             const selectionPartOfURL = createSelectionURLPart(fieldSelections, TAG_SEPARATOR, VALUE_SEPARATOR, false);
-            addOnActivateButtonEvent($element, config, layout, baseURL + selectionPartOfURL.selectionURLPart);
+            addOnActivateButtonEvent(
+              $element,
+              config,
+              layout,
+              baseURL + selectionPartOfURL.selectionURLPart
+            );
           }
         });
     });

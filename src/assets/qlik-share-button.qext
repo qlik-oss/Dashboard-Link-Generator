@@ -1,6 +1,6 @@
 {
 	"name": "Share button",
-	"description": "Create shareable app links with current sheet and selection.",
+	"description": "A button that creates links so that the current sheet and selections can be shared with others",
 	"type": "visualization",
 	"version": "X.Y.Z",
 	"icon": "share",

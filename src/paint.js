@@ -48,7 +48,7 @@ function paint ($element, layout, component, qTheme) {
   var baseURL = (config.isSecure ? "https://" : "http://" ) + config.host + (config.port ? ":" + config.port : "" ) + "/sense/app/" + applicationIdFr + "/sheet/" + SheetID + "/state/analysis/options/clearselections";
 
   //If the user chose to output the link to clipboard only create a button, otherwise create a textbox as well
-  const button = $(`<button name="GenerateDashboardLink" id="generateDashboardLink" class="dashboardLinkGenerator" />`);
+  let button = $(`<button name="GenerateDashboardLink" id="generateDashboardLink" class="dashboardLinkGenerator" />`);
   button.attr('style', `background-color: ${qTheme.properties.dataColors.primaryColor};`);
   if(layout.outputMethod == "clipboard"){
     buttonText = 'Copy Dashboard Link';
@@ -58,6 +58,7 @@ function paint ($element, layout, component, qTheme) {
     buttonText = 'Generate Link';
     var textboxHTMLCode = '<textarea id="textbox" class="linkTextboxArea" type="text" readOnly="true" style="height: 90%;width: 90%;font-size: 10px;" value="0"/>';
     $element.html('<table style="height:100%;text-align: center;"><tr><td style="width:20%;">'+button[0].outerHTML+'</td><td style="width:80%;">'+textboxHTMLCode+'</td></tr></table>');
+    button = $('#generateDashboardLink');
   }
   button.text(buttonText);
 

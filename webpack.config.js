@@ -60,11 +60,7 @@ const config = {
     new CopyWebpackPlugin([
       'src/assets/' + settings.name + '.qext',
       'src/assets/' + settings.name + '.png',
-      'src/assets/wbfolder.wbl',
-      {
-        from: 'src/url-resolver',
-        to: 'url-resolver/[name].[ext]'
-      }
+      'src/assets/wbfolder.wbl'
     ], {}),
     new StyleLintPlugin()
   ]

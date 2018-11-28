@@ -33,12 +33,6 @@ export default {
             label: "Max Values Selected in One Field",
             defaultValue: "100",
             min: 1
-          },
-          urlResolver: {
-            ref: "urlResolver",
-            type: "string",
-            label: "URL Resolver Link",
-            defaultValue: "extensions/qlik-share-button/url-resolver/index.html"
           }
         }
       },

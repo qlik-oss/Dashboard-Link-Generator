@@ -17,9 +17,11 @@ export function createSelectionURLPart (fieldSelections,tagSeparator,valueSepara
     }
     //Otherwise it just creates the selections part of the URL
     else {
-      returnObject.selectionURLPart += "/select/"+encodeURIComponent(item.split(tagSeparator)[0]) + "/%5B" + encodeURIComponent(item.split(tagSeparator)[1].replace(tagSeparator,";"))+"%5D";
+      returnObject.selectionURLPart += "/select/"+encodeURIComponent(item.split(tagSeparator)[0]) + "/" + encodeURIComponent(item.split(tagSeparator)[1].replace(tagSeparator,";"));
       const splitForBrackets = returnObject.selectionURLPart.split("%3B%3B%3B%3B");
-      returnObject.selectionURLPart = splitForBrackets.join("%5D%3B%5B");
+      returnObject.selectionURLPart = splitForBrackets.join("%3B");
+      // Handle specific characters
+      returnObject.selectionURLPart.replace(/\*/g, '%2A');
     }
   });
   return returnObject;
@@ -28,18 +30,19 @@ export function createSelectionURLPart (fieldSelections,tagSeparator,valueSepara
 //Helper funciton for adding on a "qv-activate" event of button/link
 export function addOnActivateButtonEvent ($element,config,layout,url,recipient,topic,body) {
   var encodedURL = encodeURIComponent(url);
-
   $("#generateDashboardLink").off(`qv-activate.${LISTENER_NAMESPACE}`);
   $("#generateDashboardLink").on(`qv-activate.${LISTENER_NAMESPACE}`, function () {
-    var finalURL = (config.isSecure ? "https://" : "http://" ) + config.host + (config.port ? ":" + config.port : "" ) + "/" + layout.urlResolver + "?URL=" + encodedURL;
+    var finalURL = encodedURL;
 
     if(layout.outputMethod == "email"){
-      window.location.href = 'mailto:' + recipient + '?subject=' + topic + '&body=' + body + " " + "%0D%0A" + "%0D%0A" + (config.isSecure ? "https://" : "http://" ) + config.host + (config.port ? ":" + config.port : "" ) + "/" + layout.urlResolver + "?URL=" + encodedURL + "%0D%0A" + "%0D%0A" + "%0D%0A" + "http://www.qlik.com";
+      //Opening a new email with the user settings' input subject, the dashboard generated link, and the user settings' input body
+      window.location.href = 'mailto:' + recipient + '?subject=' + topic + '&body=' + body + " " + "%0D%0A" + "%0D%0A" + encodedURL + "%0D%0A" + "%0D%0A" + "%0D%0A" + "http://www.qlik.com";
     }
     else if(layout.outputMethod == "clipboard"){
       $('.dashboardLinkGenerator').off(`click.${LISTENER_NAMESPACE}`);
       $('.dashboardLinkGenerator').on(`click.${LISTENER_NAMESPACE}`, function() {
-        copyTextToClipboard((config.isSecure ? "https://" : "http://" ) + config.host + (config.port ? ":" + config.port : "" ) + "/" + layout.urlResolver + "?URL=" + url);
+        copyTextToClipboard(url);
+
       });
       //Changing the button's text temporarily to mark success
       document.getElementById('generateDashboardLink').innerHTML= "Copied To Clipboard!";

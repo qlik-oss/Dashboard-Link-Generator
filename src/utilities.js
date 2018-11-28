@@ -28,17 +28,13 @@ export function createSelectionURLPart (fieldSelections,tagSeparator,valueSepara
 }
 
 //Helper funciton for adding on a "qv-activate" event of button/link
-export function addOnActivateButtonEvent ($element,config,layout,url,recipient,topic,body) {
+export function addOnActivateButtonEvent ($element,config,layout,url) {
   var encodedURL = encodeURIComponent(url);
   $("#generateDashboardLink").off(`qv-activate.${LISTENER_NAMESPACE}`);
   $("#generateDashboardLink").on(`qv-activate.${LISTENER_NAMESPACE}`, function () {
     var finalURL = encodedURL;
 
-    if(layout.outputMethod == "email"){
-      //Opening a new email with the user settings' input subject, the dashboard generated link, and the user settings' input body
-      window.location.href = 'mailto:' + recipient + '?subject=' + topic + '&body=' + body + " " + "%0D%0A" + "%0D%0A" + encodedURL + "%0D%0A" + "%0D%0A" + "%0D%0A" + "http://www.qlik.com";
-    }
-    else if(layout.outputMethod == "clipboard"){
+    if(layout.outputMethod == "clipboard"){
       $('.dashboardLinkGenerator').off(`click.${LISTENER_NAMESPACE}`);
       $('.dashboardLinkGenerator').on(`click.${LISTENER_NAMESPACE}`, function() {
         copyTextToClipboard(url);

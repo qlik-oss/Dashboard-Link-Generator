@@ -73,7 +73,6 @@ export function addOnActivateButtonEvent ($element,config,layout,url) {
     window.onbeforeunload = null;
     return false;
   });
-  $("#generateDashboardLink").prop("disabled",false);
 }
 
 function copyTextToClipboard(text) {

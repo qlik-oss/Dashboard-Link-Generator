@@ -59,8 +59,7 @@ const config = {
   plugins: [
     new CopyWebpackPlugin([
       'src/assets/' + settings.name + '.qext',
-      'src/assets/' + settings.name + '.png',
-      'src/assets/wbfolder.wbl'
+      'src/assets/' + settings.name + '.png'
     ], {}),
     new StyleLintPlugin()
   ]

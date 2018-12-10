@@ -30,7 +30,8 @@ export function createSelectionURLPart (fieldSelections,tagSeparator,valueSepara
 //Helper funciton for adding on a "qv-activate" event of button/link
 export function addOnActivateButtonEvent ($element,config,layout,url) {
   var encodedURL = encodeURIComponent(url);
-  $("#generateDashboardLink").off(`qv-activate.${LISTENER_NAMESPACE}`);
+  $("#generateDashboardLink").off();
+  console.log('adding button event');
   $("#generateDashboardLink").on(`qv-activate.${LISTENER_NAMESPACE}`, function () {
     var finalURL = encodedURL;
 
@@ -38,7 +39,6 @@ export function addOnActivateButtonEvent ($element,config,layout,url) {
       $('.dashboardLinkGenerator').off(`click.${LISTENER_NAMESPACE}`);
       $('.dashboardLinkGenerator').on(`click.${LISTENER_NAMESPACE}`, function() {
         copyTextToClipboard(url);
-
       });
       //Changing the button's text temporarily to mark success
       document.getElementById('generateDashboardLink').innerHTML= "Copied To Clipboard!";

@@ -1,6 +1,7 @@
 import qlik from 'qlik';
 import paint from './paint';
 import './main.less';
+import controller from './controller';
 
 export default {
   definition: {
@@ -39,6 +40,7 @@ export default {
   support:{
     exportData: false
   },
+  controller: ['$scope', controller],
   paint: ($element, layout) => {
     const component = this;
     const app = qlik.currApp(this);

@@ -1,13 +1,15 @@
-<div qv-extension>
-  <table style="height:100%;text-align: center;">
-    <tr>
-      <td style="width:20%;">
-          <button name="GenerateDashboardLink" class="dashboardLinkGenerator">
-          </button>
-      </td>
-      <td style="width:80%;">
-        {{buttonUrl}}
-      </td>
-    </tr>
-  </table>
-</div>
+
+<table style="height:100%;text-align: center;">
+  <tr>
+    <td ng-style="{'width':layout.outputMethod === 'textbox' ? '20%' : '100%'}">
+      <button ng-click="buttonClick()" ng-disabled="tooManySelectionsMade" ng-style="{'background-color':buttonColor}" name="GenerateDashboardLink" class="dashboardLinkGenerator">
+        {{buttonText}}
+      </button>
+    </td>
+    <td style="width:80%" ng-style="{'display':layout.outputMethod === 'textbox' ? 'table-cell' : 'none'}">
+      <textarea class="linkTextboxArea" type="text" readOnly="true" style="height: 90%;width: 90%;font-size: 10px;" value="0">
+        {{textAreaText}}
+      </textarea>
+    </td>
+  </tr>
+</table>

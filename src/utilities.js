@@ -75,7 +75,7 @@ export function addOnActivateButtonEvent ($element,config,layout,url) {
   });
 }
 
-function copyTextToClipboard(text) {
+export function copyTextToClipboard(text) {
   var textArea = document.createElement("textarea");
 
   // *** This styling is an extra step which is likely not required. ***

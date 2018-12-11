@@ -42,15 +42,5 @@ export default {
     exportData: false
   },
   template: template,
-  controller: ['$scope', controller],
-  // paint: ($element, layout) => {
-  //   const component = this;
-  //   const app = qlik.currApp(this);
-  //   app.theme.getApplied()
-  //     .then(qTheme => {
-  //       paint($element, layout, component, qTheme);
-  //     }).catch(exception => {
-  //       console.error(exception); // eslint-disable-line no-console
-  //     });
-  // }
+  controller: ['$scope', '$element', controller],
 };

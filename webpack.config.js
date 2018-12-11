@@ -53,7 +53,16 @@ const config = {
       {
         test: /.less$/,
         use: ['style-loader', 'css-loader', 'less-loader']
-      }
+      },
+      {
+        test: /\.html$/,
+        use: [ {
+          loader: 'html-loader',
+          options: {
+            minimize: true
+          }
+        }],
+      },
     ]
   },
   plugins: [

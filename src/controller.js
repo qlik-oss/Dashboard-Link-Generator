@@ -47,6 +47,7 @@ export default ($scope) => {
           qWidth: selectionPartOfURL.suspectedFields.length
         }]
       }, (reply) => {
+        console.log('reply in selections count cube');
         if($scope.selectedCountCubeIds.includes(reply.qInfo.qId)) return;
 
         $scope.selectedCountCubeIds.push(reply.qInfo.qId);
@@ -80,6 +81,7 @@ export default ($scope) => {
         qWidth: 1
       }]
     }, (reply) => {
+      console.log('reply in current slections cube');
       const qMatrix = reply.qHyperCube.qDataPages[0].qMatrix;
       const qText = qMatrix[0][0].qText;
       $scope.fieldSelections = (qText && qText != '-') ? qText.split(RECORD_SEPARATOR) : [];
@@ -101,9 +103,4 @@ export default ($scope) => {
       createSelectedCountCube(selectionPartOfURL);
     }
   );
-
-
-  setTimeout(() => {
-    console.log('moi');
-  },3000);
 };

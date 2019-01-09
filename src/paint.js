@@ -22,6 +22,9 @@ if (!String.prototype.includes) {
   };
 }
 
+var suspectedCountCubeId = null;
+var suspectedFieldCount = 0;
+
 function paint ($element, layout, component, qTheme) {
   let buttonText = '';
   var config = {
@@ -60,7 +63,11 @@ function paint ($element, layout, component, qTheme) {
     $element.html('<table style="height:100%;text-align: center;"><tr><td style="width:20%;">'+button[0].outerHTML+'</td><td style="width:80%;">'+textboxHTMLCode+'</td></tr></table>');
     button = $('#generateDashboardLink');
   }
-  button.text(buttonText);
+  var setButtonState = function(label, disabled) {
+    button.text(label);
+    button.prop("disabled", disabled);
+  };
+  setButtonState(buttonText, false);
 
   //If in edit mode, do nothing
   if(window.location.pathname.includes("/state/edit")) return;
@@ -83,13 +90,12 @@ function paint ($element, layout, component, qTheme) {
       }]
     },
     reply => {
-      button.text(buttonText);
-      button.prop("disabled", false);
       const qMatrix = reply.qHyperCube.qDataPages[0].qMatrix;
       const qText = qMatrix[0][0].qText;
 
       const fieldSelections = (qText && qText != '-') ? qText.split(RECORD_SEPARATOR) : [];
       if (fieldSelections.length === 0) {
+        setButtonState(buttonText, false);
         addOnActivateButtonEvent(
           $element,
           config,
@@ -101,6 +107,8 @@ function paint ($element, layout, component, qTheme) {
 
       const selectionPartOfURL = createSelectionURLPart(fieldSelections, TAG_SEPARATOR, VALUE_SEPARATOR, true);
       if (!selectionPartOfURL.tooManySelectionsPossible) {
+        setButtonState(buttonText, false);
+        suspectedFieldCount = 0;
         addOnActivateButtonEvent(
           $element,
           config,
@@ -110,7 +118,20 @@ function paint ($element, layout, component, qTheme) {
         return;
       }
 
+      if (suspectedCountCubeId && suspectedFieldCount == selectionPartOfURL.suspectedFields.length) {
+        // Already have a selection-count-cube, for these fields, so no need to create a new
+        return;
+      }
+
+      if (suspectedCountCubeId) {
+        // Destroy current select-count-cube before creating a new one
+        app.destroySessionObject(suspectedCountCubeId);
+        suspectedCountCubeId = null;
+        suspectedFieldCount = 0;
+      }
+
       // Create a new hypercube with the number of selections of the suspected fields
+      suspectedFieldCount = selectionPartOfURL.suspectedFields.length;
       app.createCube(
         {
           qMeasures: selectionPartOfURL.suspectedFields.map(field => ({
@@ -122,29 +143,18 @@ function paint ($element, layout, component, qTheme) {
             qTop: 0,
             qLeft: 0,
             qHeight: 1,
-            qWidth: selectionPartOfURL.suspectedFields.length
+            qWidth: suspectedFieldCount
           }]
         },
         reply => {
+          suspectedCountCubeId = reply.qInfo.qId;
           const qMatrix = reply.qHyperCube.qDataPages[0].qMatrix;
           const tooManySelectionsMade = qMatrix[0].some(suspectedSelection => (
             parseInt(suspectedSelection.qText) > layout.maxSelected
           ));
           if (tooManySelectionsMade) {
             // If this is the case for at least one field, disable the button
-            button.text("Too Many Selections");
-            button.prop("disabled", true);
-          }
-          else {
-            // Considering it a false alarm (for example some field has actual value that follows the "x of y" pattern)
-            // activate the button
-            const selectionPartOfURL = createSelectionURLPart(fieldSelections, TAG_SEPARATOR, VALUE_SEPARATOR, false);
-            addOnActivateButtonEvent(
-              $element,
-              config,
-              layout,
-              baseURL + selectionPartOfURL.selectionURLPart
-            );
+            setButtonState("Too Many Selections", true);
           }
         });
     });

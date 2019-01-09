@@ -33,6 +33,7 @@ export function addOnActivateButtonEvent ($element,config,layout,url) {
   $("#generateDashboardLink").off(`qv-activate.${LISTENER_NAMESPACE}`);
   $("#generateDashboardLink").on(`qv-activate.${LISTENER_NAMESPACE}`, function () {
     var finalURL = encodedURL;
+    let tempSuccessButtonLabel = "Copied To Clipboard!";
 
     if(layout.outputMethod == "clipboard"){
       $('.dashboardLinkGenerator').off(`click.${LISTENER_NAMESPACE}`);
@@ -41,10 +42,14 @@ export function addOnActivateButtonEvent ($element,config,layout,url) {
 
       });
       //Changing the button's text temporarily to mark success
-      document.getElementById('generateDashboardLink').innerHTML= "Copied To Clipboard!";
+      document.getElementById('generateDashboardLink').innerHTML= tempSuccessButtonLabel;
       //Waiting for 1.5 seconds and resetting the button's text so that users are not discouraged to make new selections and generate new links
       setTimeout(function(){
-        document.getElementById('generateDashboardLink').innerHTML= "Copy Dashboard Link";
+        let labelElement = document.getElementById('generateDashboardLink');
+        if (labelElement.innerHTML == tempSuccessButtonLabel) {
+          // Label hasn't changed because of selection change, so remove success label
+          labelElement.innerHTML = "Generate Link";
+        }
       },1500);
     }
     else if(layout.outputMethod == "textbox"){
@@ -64,10 +69,14 @@ export function addOnActivateButtonEvent ($element,config,layout,url) {
         }
       });
       //Changing the button's text temporarily to mark success
-      document.getElementById('generateDashboardLink').innerHTML= "Copied To Clipboard!";
+      document.getElementById('generateDashboardLink').innerHTML = tempSuccessButtonLabel;
       //Waiting for 1.5 seconds and resetting the button's text so that users are not discouraged to make new selections and generate new links
-      setTimeout(function(){
-        document.getElementById('generateDashboardLink').innerHTML= "Generate Link";
+      setTimeout(function() {
+        let labelElement = document.getElementById('generateDashboardLink');
+        if (labelElement.innerHTML == tempSuccessButtonLabel) {
+          // Label hasn't changed because of selection change, so remove success label
+          labelElement.innerHTML = "Generate Link";
+        }
       },1500);
     }
     window.onbeforeunload = null;

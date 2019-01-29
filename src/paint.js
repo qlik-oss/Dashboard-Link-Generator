@@ -63,7 +63,8 @@ function paint ($element, layout, component, qTheme) {
   button.text(buttonText);
 
   //If in edit mode, do nothing
-  if(window.location.pathname.includes("/state/edit")) return;
+  let mode = $element.parent().scope().object.getInteractionState();
+  if( mode === 2 ) return;
 
   const maxValuesSelectedInField = Math.max(1, layout.maxSelected);
 

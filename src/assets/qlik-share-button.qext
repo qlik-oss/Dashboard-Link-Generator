@@ -10,6 +10,7 @@
 	"keywords": "qlik-sense, visualization",
 	"license": "MIT",
 	"repository": "",
+	"installer": "QlikExtensionBundler",
 	"dependencies": {
 		"qlik-sense": ">=5.5.x"
 	},

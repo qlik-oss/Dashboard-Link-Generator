@@ -1,18 +1,21 @@
-const CopyWebpackPlugin = require('copy-webpack-plugin');
 const StyleLintPlugin = require('stylelint-webpack-plugin');
-const settings = require('./settings');
+const packageJSON = require('./package.json');
+const path = require('path');
 
-console.log('Webpack mode:', settings.mode); // eslint-disable-line no-console
+const DIST = path.resolve("./dist");
+const mode = process.env.NODE_ENV || 'development';
+
+console.log('Webpack mode:', mode); // eslint-disable-line no-console
 
 const config = {
   devtool: 'source-map',
   entry: [
     './src/index.js'
   ],
-  mode: settings.mode,
+  mode: mode,
   output: {
-    path: settings.buildDestination,
-    filename: settings.name + '.js',
+    path: DIST,
+    filename: packageJSON.name + '.js',
     libraryTarget: 'amd'
   },
   externals: {
@@ -57,11 +60,6 @@ const config = {
     ]
   },
   plugins: [
-    new CopyWebpackPlugin([
-      'src/assets/' + settings.name + '.qext',
-      'src/assets/' + settings.name + '.png',
-      'src/assets/wbfolder.wbl'
-    ], {}),
     new StyleLintPlugin()
   ]
 };

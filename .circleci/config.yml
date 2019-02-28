@@ -3,16 +3,15 @@ version: 2
 defaults: &defaults
   working_directory: ~/qlik-share-button
   docker:
-    - image: circleci/node:stretch
+    - image: circleci/node:stretch-browsers
   environment:
     GITHUB_ORG: "qlik-oss"
     GITHUB_REPO: "Dashboard-Link-Generator"
     PACKAGE_NAME: "qlik-share-button"
 
 jobs:
-  test:
-    docker:
-    - image: circleci/node:stretch-browsers
+  build:
+    <<: *defaults
     steps:
       - checkout
       - run:
@@ -27,76 +26,50 @@ jobs:
             --blackduck.password=${svc_blackduck} \
             --detect.project.name="Dashboard-Link-Generator"
       - run:
-          name: Run tests
-          command: npm run test-once
-
-  bump-version:
-    <<: *defaults
-    steps:
-      - checkout
-      - run:
-          name: Bump version
-          command: scripts/bump-version.sh $GITHUB_ORG $GITHUB_REPO
+          name: Build
+          command: |
+            npm run build:zip
+            sudo chmod +x ./.circleci/verify-files.sh
+            ./.circleci/verify-files.sh
       - persist_to_workspace:
           root: ~/qlik-share-button
           paths:
-            - BUMPED_VERSION
-
-  build:
+            - dist
+  release:
     <<: *defaults
     steps:
       - checkout
       - attach_workspace:
           at: ~/qlik-share-button
       - run:
-          name: Install dependencies
-          command: npm install
-      - run:
-          name: Build and package
+          name: Install GHR
           command: |
-            export VERSION=$(scripts/get-bumped-version.sh)
-            echo "Version: ${VERSION}"
-            npm run build
-          environment:
-            NODE_ENV: production
-      - persist_to_workspace:
-          root: ~/qlik-share-button
-          paths:
-            - build
-      - store_artifacts:
-          path: build
-          destination: build
-  deploy:
-    <<: *defaults
-    steps:
-      - checkout
-      - attach_workspace:
-          at: ~/qlik-share-button
+            sudo chmod +x ./.circleci/install-ghr.sh
+            ./.circleci/install-ghr.sh
       - run:
-          name: Install ghr
-          command: scripts/install-ghr.sh
-      - run:
-          name: Create GitHub Release
+          name: Create github release
           command: |
-            export VERSION=$(scripts/get-bumped-version.sh)
-            echo "Version: ${VERSION}"
-            scripts/create-release.sh $GITHUB_ORG $GITHUB_REPO $PACKAGE_NAME $VERSION
+            sudo chmod +x ./.circleci/get-package-version.sh
+            export PACKAGE_VERSION=$(./.circleci/get-package-version.sh)
+            echo "Version: ${PACKAGE_VERSION}"
+            sudo chmod +x ./.circleci/create-release.sh
+            ./.circleci/create-release.sh $GITHUB_ORG $GITHUB_REPO $PACKAGE_NAME $PACKAGE_VERSION
 
 workflows:
   version: 2
-  master_flow:
+  build-release:
     jobs:
-      - test
-      - bump-version:
-          requires:
-            - test
       - build:
-          requires:
-            - bump-version
-      - deploy:
+          filters:
+            tags:
+              only:
+                - /v.*/
+      - release:
           requires:
             - build
           filters:
             branches:
+              ignore: /.*/
+            tags:
               only:
-                - master
+                - /v.*/

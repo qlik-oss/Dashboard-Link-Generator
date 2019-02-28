@@ -10,14 +10,18 @@ export function createSelectionURLPart (fieldSelections,tagSeparator,valueSepara
     suspectedFields : []
   };
   fieldSelections.forEach(function (item) {
-    //If this function is instructed to check for tooManySelections, it checks if the selection contains the keywords of, ALL, or NOT, indicating that the selection is not in the 'x of y values' format
-    if (checkForTooManySelections && (item.includes(" of ") || item.includes("ALL") || item.includes("NOT")) && item.split(valueSeparator).length == 1) {
+    //If this function is instructed to check for tooManySelections, it checks if the selection
+    // contains the keywords of, ALL, or NOT, indicating that the selection is not in the 'x of y values' format
+    if (checkForTooManySelections
+      && (item.includes(" of ") || item.includes("ALL") || item.includes("NOT"))
+      && item.split(valueSeparator).length == 1) {
       returnObject.tooManySelectionsPossible = true;
       returnObject.suspectedFields.push(item.split(tagSeparator)[0]);
     }
     //Otherwise it just creates the selections part of the URL
     else {
-      returnObject.selectionURLPart += "/select/"+encodeURIComponent(item.split(tagSeparator)[0]) + "/" + encodeURIComponent(item.split(tagSeparator)[1].replace(tagSeparator,";"));
+      returnObject.selectionURLPart += "/select/" + encodeURIComponent(item.split(tagSeparator)[0])
+        + "/" + encodeURIComponent(item.split(tagSeparator)[1].replace(tagSeparator,";"));
       const splitForBrackets = returnObject.selectionURLPart.split("%3B%3B%3B%3B");
       returnObject.selectionURLPart = splitForBrackets.join("%3B");
       // Handle specific characters
@@ -39,18 +43,18 @@ export function addOnActivateButtonEvent ($element,config,layout,url) {
       $('.dashboardLinkGenerator').off(`click.${LISTENER_NAMESPACE}`);
       $('.dashboardLinkGenerator').on(`click.${LISTENER_NAMESPACE}`, function() {
         copyTextToClipboard(url);
-
       });
-      //Changing the button's text temporarily to mark success
+      // Changing the button's text temporarily to mark success
       document.getElementById('generateDashboardLink').innerHTML= tempSuccessButtonLabel;
-      //Waiting for 1.5 seconds and resetting the button's text so that users are not discouraged to make new selections and generate new links
-      setTimeout(function(){
+      // Waiting for 1.5 seconds and resetting the button's text so that users are not discouraged
+      // to make new selections and generate new links
+      setTimeout(function() {
         let labelElement = document.getElementById('generateDashboardLink');
         if (labelElement.innerHTML == tempSuccessButtonLabel) {
           // Label hasn't changed because of selection change, so remove success label
           labelElement.innerHTML = "Generate Link";
         }
-      },1500);
+      }, 1500);
     }
     else if(layout.outputMethod == "textbox"){
       //Adding the dashboard generated link to the textbox
@@ -70,14 +74,15 @@ export function addOnActivateButtonEvent ($element,config,layout,url) {
       });
       //Changing the button's text temporarily to mark success
       document.getElementById('generateDashboardLink').innerHTML = tempSuccessButtonLabel;
-      //Waiting for 1.5 seconds and resetting the button's text so that users are not discouraged to make new selections and generate new links
+      // Waiting for 1.5 seconds and resetting the button's text so that users are not discouraged
+      // to make new selections and generate new links
       setTimeout(function() {
         let labelElement = document.getElementById('generateDashboardLink');
         if (labelElement.innerHTML == tempSuccessButtonLabel) {
           // Label hasn't changed because of selection change, so remove success label
           labelElement.innerHTML = "Generate Link";
         }
-      },1500);
+      }, 1500);
     }
     window.onbeforeunload = null;
     return false;
@@ -121,7 +126,6 @@ function copyTextToClipboard(text) {
 
   // Avoid flash of white box if rendered for any reason.
   textArea.style.background = 'transparent';
-
 
   textArea.value = text;
 

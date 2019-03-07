@@ -1,5 +1,5 @@
 import qlik from 'qlik';
-import paint from './paint';
+import ShareButtonView from './sharebuttonview';
 import './main.less';
 
 export default {
@@ -79,12 +79,15 @@ export default {
   support: {
     exportData: false
   },
-  paint: ($element, layout) => {
-    const component = this;
+  paint: function($element, layout) {
+    if (!this.view) {
+      this.view = new ShareButtonView(layout.qInfo.qId);
+    }
+
     const app = qlik.currApp(this);
     app.theme.getApplied()
       .then(qTheme => {
-        paint($element, layout, component, qTheme);
+        this.view.paint(app, $element, layout, qTheme);
       }).catch(exception => {
         console.error(exception); // eslint-disable-line no-console
       });

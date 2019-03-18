@@ -35,6 +35,7 @@ jobs:
           name: Bump version
           command: |
             sudo chmod +x scripts/bump-version.sh
+            sudo chmod +x scripts/get-latest-version.sh
             scripts/bump-version.sh $GITHUB_ORG $GITHUB_REPO
       - persist_to_workspace:
           root: ~/qlik-share-button

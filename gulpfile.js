@@ -6,14 +6,15 @@ var webpackConfig = require('./webpack.config');
 var webpack = require('webpack');
 var pkg = require('./package.json');
 
-var DIST = './dist'
+var DIST = './dist';
+var VERSION = process.env.VERSION || 'local-dev';
 
 gulp.task('qext', function () {
 	var qext = {
 		name: 'Share button',
 		type: 'visualization',
 		description: pkg.description,
-		version: pkg.version,
+		version: VERSION,
 		icon: 'share',
 		preview: 'sharebutton.png',
 		keywords: 'qlik-sense, visualization',
@@ -55,7 +56,7 @@ gulp.task('clean', function(){
 
 gulp.task('zip-build', function(){
   return gulp.src(DIST + '/**/*')
-    .pipe(zip(`${pkg.name}_${pkg.version}.zip`))
+    .pipe(zip(`${pkg.name}_${VERSION}.zip`))
     .pipe(gulp.dest(DIST));
 });
 

@@ -83,6 +83,7 @@ jobs:
       - run:
           name: Create GitHub Release
           command: |
+            sudo chmod +x scripts/get-bumped-version.sh
             export VERSION=$(scripts/get-bumped-version.sh)
             echo "Version: $VERSION"
             sudo chmod +x scripts/create-release.sh

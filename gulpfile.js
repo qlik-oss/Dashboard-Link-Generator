@@ -13,7 +13,7 @@ gulp.task('qext', function () {
 	var qext = {
 		name: 'Share button',
 		type: 'visualization',
-		description: pkg.description,
+		description: pkg.description + '\nVersion: ' + VERSION,
 		version: VERSION,
 		icon: 'share',
 		preview: 'sharebutton.png',

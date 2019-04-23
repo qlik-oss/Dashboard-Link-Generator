@@ -86,10 +86,19 @@ class ShareButtonView {
       }
       //Otherwise it just creates the selections part of the URL
       else {
-        returnObject.selectionURLPart += "/select/" + encodeURIComponent(item.split(TAG_SEPARATOR)[0])
-          + "/" + encodeURIComponent(item.split(TAG_SEPARATOR)[1].replace(TAG_SEPARATOR, ";"));
-        const splitForBrackets = returnObject.selectionURLPart.split("%3B%3B%3B%3B");
-        returnObject.selectionURLPart = splitForBrackets.join("%3B");
+        var fieldAndValues = item.split(TAG_SEPARATOR);
+        var values = fieldAndValues[1].split(VALUE_SEPARATOR).map(function (value) {
+          if (!isNaN(value)) {
+            // Either a number or a numeric string, we cannot know. To be safe enclose in brackets,
+            // which makes the selection work either way (but don't use brackets if not needed since
+            // it is more complex when parsing).
+            return `[${value}]`;
+          }
+          return value;
+        });
+
+        returnObject.selectionURLPart
+          += `/select/${encodeURIComponent(fieldAndValues[0])}/${encodeURIComponent(values.join(';'))}`;
         // Handle specific characters
         returnObject.selectionURLPart.replace(/\*/g, '%2A');
       }
@@ -241,6 +250,7 @@ class ShareButtonView {
         if (fieldSelections.length === 0) {
           this.setTooManySelections(false);
           this.selectionUrl = baseURL;
+          this.suspectedFieldCount = 0;
           return;
         }
 
@@ -299,6 +309,9 @@ class ShareButtonView {
             if (tooManySelectionsMade) {
               // If this is the case for at least one field, disable the button
               this.setTooManySelections(true);
+            } else {
+              const selectionPartOfURL = this.createSelectionURLPart(fieldSelections, false);
+              this.selectionUrl = baseURL + selectionPartOfURL.selectionURLPart;
             }
           });
       });

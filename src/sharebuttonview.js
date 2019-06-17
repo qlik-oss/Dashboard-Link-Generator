@@ -168,13 +168,6 @@ class ShareButtonView {
   }
 
   paint(app, $element, layout, qTheme) {
-    var config = {
-      host: window.location.hostname,
-      prefix: window.location.pathname.substr(0, window.location.pathname.toLowerCase().lastIndexOf("/extensions") + 1),
-      port: window.location.port,
-      isSecure: window.location.protocol === "https:"
-    };
-
     //Getting the current application
     var applicationId = app.model.layout.qFileName;
     if (applicationId.substring(applicationId.length - 4) == '.qvf') {
@@ -188,8 +181,7 @@ class ShareButtonView {
 
     //Creating base part of URL including clearing any leftover
     //selections before opening the new page with our selections
-    var baseURL = (config.isSecure ? "https://" : "http://") + config.host
-      + (config.port ? ":" + config.port : "") + "/sense/app/" + applicationIdFr
+    var baseURL = window.location.origin + "/sense/app/" + applicationIdFr
       + "/sheet/" + SheetID + "/state/analysis/options/clearselections";
 
     let button = $(`<button

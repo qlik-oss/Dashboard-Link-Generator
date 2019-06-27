@@ -191,9 +191,12 @@ class ShareButtonView {
 
     // If the user choose to output the link to clipboard only create a button, otherwise create a
     // textbox as well
-    if (layout.outputMethod == "clipboard") {
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i
+      .test(navigator.userAgent);
+    this.isTextBoxMode = layout.outputMethod === "textbox" && !isMobile;
+    if (!this.isTextBoxMode) {
       $element.html(button);
-    } else if (layout.outputMethod == "textbox") {
+    } else {
       var textboxHTMLCode = `<textarea id="${layout.qInfo.qId}-textbox" class="linkTextboxArea" type="text"
       readOnly="true" style="height: 90%;width: 90%;font-size: 10px;" value="0"/>`;
       $element.html(`<table style="height:100%;text-align: center;"><tr><td style="width:20%;">
@@ -201,7 +204,6 @@ class ShareButtonView {
     }
 
     this.isInEdit = $element.parent().scope().object.getInteractionState() === 2;
-    this.isTextBoxMode = layout.outputMethod === "textbox";
     this.updateButtonState();
 
     const newMaxValuesSelectedInField = Math.max(1, layout.maxSelected);

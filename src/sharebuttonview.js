@@ -1,19 +1,17 @@
 import $ from 'jquery';
 import qlik from 'qlik';
 
-const RECORD_SEPARATOR = '&@#$^()';
-const TAG_SEPARATOR = '::::';
-const VALUE_SEPARATOR = ';;;;';
 const LISTENER_NAMESPACE = "dashboard-link-generator";
 
-const TOO_MANY_SELECTIONS_BTN_LABEL = "Too Many Selections";
 const COPY_BTN_LABEL = "Copy Dashboard Link";
+const PROCESSING_BTN_LABEL = "Processing...";
+const TOO_MANY_SELECTIONS_BTN_LABEL = "Too Many Selections";
 const GENERATE_BTN_LABEL = "Generate Link";
 const COPY_SUCCESS_LABEL = "Copied To Clipboard!";
 const GENERATE_SUCCESS_LABEL = "Link Generated!";
 
 class ShareButtonView {
-  constructor(id) {
+  constructor(app, id) {
     this.id = id;
     this.selectionCountCubeId = null;
     this.maxValuesSelectedInField = 0;
@@ -22,9 +20,33 @@ class ShareButtonView {
     this.selectionUrl = '';
 
     this.isInEdit = false;
+    this.isProcessing = false;
     this.isTooManySelections = false;
     this.isTextBoxMode = false;
     this.isSuccessMessageActive = false;
+
+    var self = this;
+    this.selState = app.selectionState();
+    var listener = function () {
+      self.onSelectionChanged(app);
+    };
+    this.selState.OnData.bind(listener);
+
+    //Getting the current application
+    var applicationId = app.model.layout.qFileName;
+    if (applicationId.substring(applicationId.length - 4) == '.qvf') {
+      applicationId = applicationId.slice(0, -4);
+    }
+    var applicationIdFr = encodeURIComponent(applicationId);
+
+    //Getting the current sheet
+    var CurrentSheet = qlik.navigation.getCurrentSheetId();
+    var SheetID = CurrentSheet.sheetId;
+
+    //Creating base part of URL including clearing any leftover
+    //selections before opening the new page with our selections
+    this.baseURL = window.location.origin + "/sense/app/" + applicationIdFr
+      + "/sheet/" + SheetID + "/state/analysis/options/clearselections";
   }
 
   //Updates the button state based on the current component state.
@@ -33,7 +55,9 @@ class ShareButtonView {
     let button = $(`${buttonId}`);
     button.parent().off(`click.${LISTENER_NAMESPACE}`, `${buttonId}:enabled`);
 
-    if (this.isTooManySelections) {
+    if (this.isProcessing) {
+      button.text(PROCESSING_BTN_LABEL);
+    } else if (this.isTooManySelections) {
       button.text(TOO_MANY_SELECTIONS_BTN_LABEL);
     } else if (this.isSuccessMessageActive) {
       button.text(this.isTextBoxMode ? GENERATE_SUCCESS_LABEL : COPY_SUCCESS_LABEL);
@@ -49,6 +73,12 @@ class ShareButtonView {
         });
       }
     }
+  }
+
+  // Updates the is-processing value.
+  setProcessing(isProcessing) {
+    this.isProcessing = isProcessing;
+    this.updateButtonState();
   }
 
   // Updates the too-many-selection value.
@@ -68,42 +98,92 @@ class ShareButtonView {
     }, 1500);
   }
 
-  // Creates the url from the current selections.
-  createSelectionURLPart(fieldSelections, checkForTooManySelections) {
-    var returnObject = {
-      selectionURLPart: "",
-      tooManySelectionsPossible: false,
-      suspectedFields: []
-    };
-    fieldSelections.forEach(function (item) {
-      //If this function is instructed to check for tooManySelections, it checks if the selection
-      // contains the keywords of, ALL, or NOT, indicating that the selection is not in the 'x of y values' format
-      if (checkForTooManySelections
-        && (item.indexOf(" of ") !== -1 || item.indexOf("ALL") !== -1 || item.indexOf("NOT") !== -1)
-        && item.split(VALUE_SEPARATOR).length == 1) {
-        returnObject.tooManySelectionsPossible = true;
-        returnObject.suspectedFields.push(item.split(TAG_SEPARATOR)[0]);
-      }
-      //Otherwise it just creates the selections part of the URL
-      else {
-        var fieldAndValues = item.split(TAG_SEPARATOR);
-        var values = fieldAndValues[1].split(VALUE_SEPARATOR).map(function (value) {
-          if (!isNaN(value)) {
-            // Either a number or a numeric string, we cannot know. To be safe enclose in brackets,
-            // which makes the selection work either way (but don't use brackets if not needed since
-            // it is more complex when parsing).
-            return `[${value}]`;
-          }
-          return value;
-        });
+  getSelectionsForFieldAsync(app, fieldSelection) {
+    var self = this;
+    self.setProcessing(true);
+    var df = $.Deferred();
 
-        returnObject.selectionURLPart
-          += `/select/${encodeURIComponent(fieldAndValues[0])}/${encodeURIComponent(values.join(';'))}`;
-        // Handle specific characters
-        returnObject.selectionURLPart.replace(/\*/g, '%2A');
+    // Fetch actual data for all selections of the field. Need to do this since the shown values
+    // aren't the actual data and might not be a working selected in some cases.
+    // For instance, dates.
+    var isNumeric = false;
+    var fetchSelections = function (selection) {
+      if (selection.length >= fieldSelection.selectedCount) {
+        // Found all selections
+        return selection;
       }
+
+      // Still some selections left to fetch. Can only fetch 10k per call.
+      return app.createCube({
+        qDimensions: [{
+          qDef: {
+            qFieldDefs: [fieldSelection.fieldName]
+          }
+        }],
+        qInitialDataFetch : [{
+          qTop : selection.length,
+          qLeft : 0,
+          qHeight : 10000,
+          qWidth : 1
+        }]
+      }).then(function (model) {
+        // Extract element numbers from matrix
+        var matrix = model.layout.qHyperCube.qDataPages[0].qMatrix;
+        app.destroySessionObject(model.layout.qInfo.qId);
+        for (var i = 0; i < matrix.length; i++) {
+          var selectionData = matrix[i].map(function (item) {
+            if (isNumeric) {
+              return item.qNum;
+            }
+            if (!isNaN(item.qNum)) {
+              isNumeric = true;
+              return item.qNum;
+            }
+            return item.qText;
+          });
+          selection = selection.concat(selectionData);
+        }
+        return fetchSelections(selection);
+      });
+    };
+
+    fetchSelections([]).then(function (selections) {
+      self.setProcessing(false);
+      df.resolve({
+        fieldName: fieldSelection.fieldName,
+        values: selections
+      });
     });
-    return returnObject;
+
+    return df;
+  }
+
+  // Creates the url from the current selections.
+  onSelectionChanged(app) {
+    var self = this;
+
+    // First make sure there aren't too many selections
+    for (var key in self.selState.selections) {
+      if (self.selState.selections[key].selectedCount > self.maxSelected) {
+        self.setTooManySelections(true);
+        return;
+      }
+    }
+    self.setTooManySelections(false);
+
+    var tasks = self.selState.selections.map(function (selection) {
+      return self.getSelectionsForFieldAsync(app, selection)
+        .then(function (selectionDataForField) {
+          return `/select/${encodeURIComponent(selectionDataForField.fieldName)}/`
+            + `${encodeURIComponent(selectionDataForField.values.join(';'))}`
+              .replace(/\*/g, '%2A');
+        });
+    });
+
+    return Promise.all(tasks).then(function (urls) {
+      self.selectionUrl = self.baseURL
+        + (urls.length > 0 ? urls.reduce(function (pre, curr) { return pre + curr; }) : '');
+    });
   }
 
   // Sets the given url to a textbox (which is hidden if not in textbox-mode) and copies the url to
@@ -168,21 +248,13 @@ class ShareButtonView {
   }
 
   paint(app, $element, layout, qTheme) {
-    //Getting the current application
-    var applicationId = app.model.layout.qFileName;
-    if (applicationId.substring(applicationId.length - 4) == '.qvf') {
-      applicationId = applicationId.slice(0, -4);
+    if (this.maxSelected !== layout.maxSelected) {
+      var needUpdate = !!this.maxSelected;
+      this.maxSelected = layout.maxSelected;
+      if (needUpdate) {
+        this.onSelectionChanged(app);
+      }
     }
-    var applicationIdFr = encodeURIComponent(applicationId);
-
-    //Getting the current sheet
-    var CurrentSheet = qlik.navigation.getCurrentSheetId();
-    var SheetID = CurrentSheet.sheetId;
-
-    //Creating base part of URL including clearing any leftover
-    //selections before opening the new page with our selections
-    var baseURL = window.location.origin + "/sense/app/" + applicationIdFr
-      + "/sheet/" + SheetID + "/state/analysis/options/clearselections";
 
     let button = $(`<button
       id="${this.id}-generateDashboardLink"
@@ -203,110 +275,6 @@ class ShareButtonView {
     this.isInEdit = $element.parent().scope().object.getInteractionState() === 2;
     this.isTextBoxMode = layout.outputMethod === "textbox";
     this.updateButtonState();
-
-    const newMaxValuesSelectedInField = Math.max(1, layout.maxSelected);
-    if (newMaxValuesSelectedInField == this.maxValuesSelectedInField) {
-      // Already created selection-count cube for this
-      return;
-    }
-    this.maxValuesSelectedInField = newMaxValuesSelectedInField;
-
-    if (this.selectionCountCubeId) {
-      // Destroy previous selection-count cube
-      app.destroySessionObject(this.selectionCountCubeId);
-      this.selectionCountCubeId = null;
-    }
-
-    //Create a hypercube with the GetCurrentSelections expression
-    app.createCube(
-      {
-        qMeasures: [{
-          qDef: {
-            qDef: "=GetCurrentSelections('" + RECORD_SEPARATOR + "','" + TAG_SEPARATOR + "','"
-              + VALUE_SEPARATOR + "'," + this.maxValuesSelectedInField + ")"
-          }
-        }],
-        qInitialDataFetch: [{
-          qTop: 0,
-          qLeft: 0,
-          qHeight: 1,
-          qWidth: 1
-        }]
-      },
-      reply => {
-        this.selectionCountCubeId = reply.qInfo.qId;
-        const qMatrix = reply.qHyperCube.qDataPages[0].qMatrix;
-        const qText = qMatrix[0][0].qText;
-
-        const fieldSelections = (qText && qText != '-') ? qText.split(RECORD_SEPARATOR) : [];
-        if (fieldSelections.length === 0) {
-          this.setTooManySelections(false);
-          this.selectionUrl = baseURL;
-          this.suspectedFieldCount = 0;
-          return;
-        }
-
-        const selectionPartOfURL = this.createSelectionURLPart(fieldSelections, true);
-        if (!selectionPartOfURL.tooManySelectionsPossible) {
-          this.setTooManySelections(false);
-          if (this.suspectedCountCubeId) {
-            app.destroySessionObject(this.suspectedCountCubeId);
-            this.suspectedCountCubeId = null;
-          }
-          this.suspectedFieldCount = 0;
-          this.selectionUrl = baseURL + selectionPartOfURL.selectionURLPart;
-          return;
-        }
-
-        if (this.suspectedCountCubeId
-          && this.suspectedFieldCount == selectionPartOfURL.suspectedFields.length) {
-          // Already have a selection-count-cube, for these fields, so no need to create a new
-          return;
-        }
-
-        if (this.suspectedCountCubeId) {
-          // Destroy current select-count-cube before creating a new one
-          app.destroySessionObject(this.suspectedCountCubeId);
-          this.suspectedCountCubeId = null;
-          this.suspectedFieldCount = 0;
-        }
-
-        // Create a new hypercube with the number of selections of the suspected fields
-        this.suspectedFieldCount = selectionPartOfURL.suspectedFields.length;
-        app.createCube(
-          {
-            qMeasures: selectionPartOfURL.suspectedFields.map(field => ({
-              qDef: {
-                qDef: "=GetSelectedCount([" + field + "],True())"
-              }
-            })),
-            qInitialDataFetch: [{
-              qTop: 0,
-              qLeft: 0,
-              qHeight: 1,
-              qWidth: this.suspectedFieldCount
-            }]
-          },
-          reply => {
-            if (this.suspectedFieldCount == 0) {
-              // No longer any suspected fields, so this is about to be destroyed
-              return;
-            }
-
-            this.suspectedCountCubeId = reply.qInfo.qId;
-            const qMatrix = reply.qHyperCube.qDataPages[0].qMatrix;
-            const tooManySelectionsMade = qMatrix[0].some(suspectedSelection => (
-              parseInt(suspectedSelection.qText) > layout.maxSelected
-            ));
-            if (tooManySelectionsMade) {
-              // If this is the case for at least one field, disable the button
-              this.setTooManySelections(true);
-            } else {
-              const selectionPartOfURL = this.createSelectionURLPart(fieldSelections, false);
-              this.selectionUrl = baseURL + selectionPartOfURL.selectionURLPart;
-            }
-          });
-      });
   }
 }
 

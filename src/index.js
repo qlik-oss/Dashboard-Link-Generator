@@ -80,11 +80,11 @@ export default {
     exportData: false
   },
   paint: function($element, layout) {
+    const app = qlik.currApp(this);
     if (!this.view) {
-      this.view = new ShareButtonView(layout.qInfo.qId);
+      this.view = new ShareButtonView(app, layout.qInfo.qId);
     }
 
-    const app = qlik.currApp(this);
     app.theme.getApplied()
       .then(qTheme => {
         this.view.paint(app, $element, layout, qTheme);

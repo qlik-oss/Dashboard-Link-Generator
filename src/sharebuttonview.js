@@ -45,7 +45,8 @@ class ShareButtonView {
 
     //Creating base part of URL including clearing any leftover
     //selections before opening the new page with our selections
-    this.baseURL = window.location.origin + "/sense/app/" + applicationIdFr
+    var origin = window.location.href.substr(0, window.location.href.indexOf('/sense/app'));   
+    this.baseURL = origin + "/sense/app/" + applicationIdFr
       + "/sheet/" + SheetID + "/state/analysis/options/clearselections";
   }
 

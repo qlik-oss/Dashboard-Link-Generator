@@ -101,24 +101,29 @@ class ShareButtonView {
 
   getSelectionsForFieldAsync(app, fieldSelection) {
     var self = this;
+    var fieldDef = fieldSelection.qField;
     self.setProcessing(true);
     var df = $.Deferred();
 
     // Fetch actual data for all selections of the field. Need to do this since the shown values
     // aren't the actual data and might not be a working selected in some cases.
     // For instance, dates.
-    var isNumeric = false;
+    var isNumeric = false;    
     var fetchSelections = function (selection) {
-      if (selection.length >= fieldSelection.selectedCount) {
+      if (selection.length >= fieldSelection.qSelectedCount) {
         // Found all selections
         return selection;
-      }
+      }      
+      //if it is a derived field
+      if (fieldSelection.qField.startsWith('=')) {
+        fieldDef = fieldSelection.qReadableName;
+      }    
 
       // Still some selections left to fetch. Can only fetch 10k per call.
       return app.createCube({
         qDimensions: [{
           qDef: {
-            qFieldDefs: [fieldSelection.fieldName]
+            qFieldDefs: [fieldDef]
           }
         }],
         qInitialDataFetch : [{
@@ -151,7 +156,7 @@ class ShareButtonView {
     fetchSelections([]).then(function (selections) {
       self.setProcessing(false);
       df.resolve({
-        fieldName: fieldSelection.fieldName,
+        fieldName: fieldDef,
         values: selections
       });
     });
@@ -162,31 +167,40 @@ class ShareButtonView {
   // Creates the url from the current selections.
   onSelectionChanged(app) {
     var self = this;
+    const currentSelectionProps = {
+      qInfo: {
+        qId: 'CurrentSelection',
+        qType: 'CurrentSelection',
+      },
+      qSelectionObjectDef: {},
+    };   
+    app.model.getOrCreateSessionObject(currentSelectionProps).then((sessionObj) => {
+      return sessionObj.getLayout().then((currentSelectionsObj) => {
+      // First make sure there aren't too many selections
+        const selections = currentSelectionsObj.qSelectionObject.qSelections;
+        for (var key in selections) {
+          if (selections[key].qSelectedCount > self.maxSelected) {
+            self.setTooManySelections(true);
+            return;
+          }
+        }
+        self.setTooManySelections(false);
 
-    // First make sure there aren't too many selections
-    for (var key in self.selState.selections) {
-      if (self.selState.selections[key].selectedCount > self.maxSelected) {
-        self.setTooManySelections(true);
-        return;
-      }
-    }
-    self.setTooManySelections(false);
-
-    var tasks = self.selState.selections.map(function (selection) {
-      return self.getSelectionsForFieldAsync(app, selection)
-        .then(function (selectionDataForField) {
-          return `/select/${encodeURIComponent(selectionDataForField.fieldName)}/`
-            + `${encodeURIComponent(selectionDataForField.values.join(';'))}`
-              .replace(/\*/g, '%2A');
+        var tasks = selections.map(function (selection) {
+          return self.getSelectionsForFieldAsync(app, selection)
+            .then(function (selectionDataForField) {
+              return `/select/${encodeURIComponent(selectionDataForField.fieldName)}/`
+                + `${encodeURIComponent(selectionDataForField.values.join(';'))}`
+                  .replace(/\*/g, '%2A');
+            });
+        });      
+        return Promise.all(tasks).then(function (urls) {
+          self.selectionUrl = self.baseURL
+            + (urls.length > 0 ? urls.reduce(function (pre, curr) { return pre + curr; }) : '');
         });
+      });
     });
-
-    return Promise.all(tasks).then(function (urls) {
-      self.selectionUrl = self.baseURL
-        + (urls.length > 0 ? urls.reduce(function (pre, curr) { return pre + curr; }) : '');
-    });
-  }
-
+  }  
   // Sets the given url to a textbox (which is hidden if not in textbox-mode) and copies the url to
   // the clipboard.
   setAndCopyUrl(url) {

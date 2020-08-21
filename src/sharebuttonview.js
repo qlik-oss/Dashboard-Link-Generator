@@ -115,7 +115,7 @@ class ShareButtonView {
         return selection;
       }      
       //if it is a derived field
-      if (fieldSelection.qField.startsWith('=')) {
+      if (fieldSelection.qField.startsWith('=') && fieldSelection.qReadableName!=undefined) {
         fieldDef = fieldSelection.qReadableName;
       }    
 

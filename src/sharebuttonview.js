@@ -9,10 +9,11 @@ const TOO_MANY_SELECTIONS_BTN_LABEL = "Too Many Selections";
 const GENERATE_BTN_LABEL = "Generate Link";
 const COPY_SUCCESS_LABEL = "Copied To Clipboard!";
 const GENERATE_SUCCESS_LABEL = "Link Generated!";
+const replaceRegEx = /[!?='()*]/g;
 
 class ShareButtonView {
   constructor(app, id) {
-    this.id = id;
+    this.id = this.encodeString(id);
     this.selectionCountCubeId = null;
     this.maxValuesSelectedInField = 0;
     this.suspectedCountCubeId = null;
@@ -48,6 +49,12 @@ class ShareButtonView {
     var origin = window.location.href.substr(0, window.location.href.indexOf('/sense/app'));   
     this.baseURL = origin + "/sense/app/" + applicationIdFr
       + "/sheet/" + SheetID + "/state/analysis/options/clearselections";
+  }
+
+  encodeString(str) {
+    return encodeURIComponent(str).replace(replaceRegEx, (c) => {
+      return `%${c.charCodeAt(0).toString(16).toUpperCase()}`;
+    });
   }
 
   //Updates the button state based on the current component state.

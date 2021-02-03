@@ -1,6 +1,8 @@
 import $ from 'jquery';
 import qlik from 'qlik';
 
+const LISTENER_NAMESPACE = "dashboard-link-generator";
+
 const COPY_BTN_LABEL = "Copy Dashboard Link";
 const PROCESSING_BTN_LABEL = "Processing...";
 const TOO_MANY_SELECTIONS_BTN_LABEL = "Too Many Selections";
@@ -48,31 +50,28 @@ class ShareButtonView {
       + "/sheet/" + SheetID + "/state/analysis/options/clearselections";
   }
 
-  handleClick() {
-    if (!this.isInEdit) {
-      //var self = this;
-      this.setAndCopyUrl(this.selectionUrl);
-      this.showSuccess();
-      window.onbeforeunload = null;
-      return false;
-    }
-  }
-
   //Updates the button state based on the current component state.
   updateButtonState() {
-    var button = document.getElementById(`${this.id}-generateDashboardLink`);
-    var self = this;
-    button.onclick = function() {
-      self.handleClick();
-    };
+    let button = $(document.getElementById(`${this.id}-generateDashboardLink`));
+    button.parent().off(`click.${LISTENER_NAMESPACE}`);
+    
     if (this.isProcessing) {
-      button.innerText = PROCESSING_BTN_LABEL;
+      button.text(PROCESSING_BTN_LABEL);
     } else if (this.isTooManySelections) {
-      button.innerText = TOO_MANY_SELECTIONS_BTN_LABEL;
+      button.text(TOO_MANY_SELECTIONS_BTN_LABEL);
     } else if (this.isSuccessMessageActive) {
-      button.innerText = this.isTextBoxMode ? GENERATE_SUCCESS_LABEL : COPY_SUCCESS_LABEL;
+      button.text(this.isTextBoxMode ? GENERATE_SUCCESS_LABEL : COPY_SUCCESS_LABEL);
     } else {
-      button.innerText= this.isTextBoxMode ? GENERATE_BTN_LABEL : COPY_BTN_LABEL;
+      button.text(this.isTextBoxMode ? GENERATE_BTN_LABEL : COPY_BTN_LABEL);
+      if (!this.isInEdit) {
+        var self = this;
+        button.parent().on(`click.${LISTENER_NAMESPACE}`, function () {
+          self.setAndCopyUrl(self.selectionUrl);
+          self.showSuccess();
+          window.onbeforeunload = null;
+          return false;
+        });
+      }
     }
   }
 

@@ -12,7 +12,7 @@ const GENERATE_SUCCESS_LABEL = "Link Generated!";
 
 class ShareButtonView {
   constructor(app, id) {
-    this.id = id;
+    this.id = encodeURIComponent(id);
     this.selectionCountCubeId = null;
     this.maxValuesSelectedInField = 0;
     this.suspectedCountCubeId = null;
@@ -52,10 +52,9 @@ class ShareButtonView {
 
   //Updates the button state based on the current component state.
   updateButtonState() {
-    let buttonId = `#${this.id}-generateDashboardLink`;
-    let button = $(`${buttonId}`);
-    button.parent().off(`click.${LISTENER_NAMESPACE}`, `${buttonId}:enabled`);
-
+    let button = $(document.getElementById(`${this.id}-generateDashboardLink`));
+    button.parent().off(`click.${LISTENER_NAMESPACE}`);
+    
     if (this.isProcessing) {
       button.text(PROCESSING_BTN_LABEL);
     } else if (this.isTooManySelections) {
@@ -66,7 +65,7 @@ class ShareButtonView {
       button.text(this.isTextBoxMode ? GENERATE_BTN_LABEL : COPY_BTN_LABEL);
       if (!this.isInEdit) {
         var self = this;
-        button.parent().on(`click.${LISTENER_NAMESPACE}`, `${buttonId}:enabled`, function () {
+        button.parent().on(`click.${LISTENER_NAMESPACE}`, function () {
           self.setAndCopyUrl(self.selectionUrl);
           self.showSuccess();
           window.onbeforeunload = null;

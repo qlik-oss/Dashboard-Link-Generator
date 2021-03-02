@@ -1,6 +1,6 @@
 {
   "name": "qlik-share-button",
-  "version": "0.36.0",
+  "version": "0.37.0",
   "description": "A button that creates links so that the current sheet and selections can be shared with others.",
   "homepage": "",
   "repository": "https://github.com/qlik-oss/Dashboard-Link-Generator",
